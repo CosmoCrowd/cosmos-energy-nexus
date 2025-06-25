@@ -18,14 +18,14 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [tonBalance, setTonBalance] = useState(0);
   const [cosmoBalance, setCosmoBalance] = useState(0);
   const [userLevel, setUserLevel] = useState(0);
-  const [totalUsers] = useState(42847); // Mock data
+  const [totalUsers] = useState(127843); // Реалистичное число участников
 
   const connectWallet = () => {
-    // Mock wallet connection
+    // Реалистичные данные для нового пользователя
     setIsConnected(true);
-    setTonBalance(15.7);
-    setCosmoBalance(1250);
-    setUserLevel(3);
+    setTonBalance(2.45); // Небольшой баланс для старта
+    setCosmoBalance(150); // Стартовые токены
+    setUserLevel(1); // Начальный уровень
     console.log('Wallet connected via Telegram');
   };
 

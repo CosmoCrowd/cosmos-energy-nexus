@@ -5,135 +5,125 @@ import { Plus, Send, ArrowUpDown, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
 const WalletScreen = () => {
-  const { tonBalance, cosmoBalance, isConnected } = useWallet();
+  const { tonBalance, cosmoBalance } = useWallet();
 
   const transactions = [
-    { id: 1, type: 'Заработано', amount: '+2.5 TON', date: '2024-01-15', status: 'completed' },
-    { id: 2, type: 'Реинвест', amount: '-1.0 TON', date: '2024-01-14', status: 'completed' },
-    { id: 3, type: 'Вывод', amount: '-5.0 TON', date: '2024-01-13', status: 'pending' },
-    { id: 4, type: 'Заработано', amount: '+150 COSMO', date: '2024-01-12', status: 'completed' },
+    { id: 1, type: 'Реинвест', amount: '-0.5 TON', date: '25.06.2024', status: 'completed' },
+    { id: 2, type: 'Заработано', amount: '+0.75 TON', date: '24.06.2024', status: 'completed' },
+    { id: 3, type: 'Пополнение', amount: '+2.0 TON', date: '23.06.2024', status: 'completed' },
+    { id: 4, type: 'Бонус', amount: '+25 COSMO', date: '23.06.2024', status: 'completed' },
+    { id: 5, type: 'Реферал', amount: '+50 COSMO', date: '22.06.2024', status: 'completed' },
   ];
 
   const nfts = [
-    { id: 1, name: 'Cosmo Crystal #123', image: '🔮', rarity: 'Epic' },
-    { id: 2, name: 'Energy Particle #456', image: '⚡', rarity: 'Rare' },
+    { id: 1, name: 'Cosmo Crystal #1247', image: '🔮', rarity: 'Rare', price: '0.8 TON' },
+    { id: 2, name: 'Energy Particle #892', image: '⚡', rarity: 'Common', price: '0.3 TON' },
   ];
 
-  const handleTopUp = () => {
-    toast.success('Перенаправление на пополнение TON');
-  };
-
-  const handleSend = () => {
-    toast.info('Функция отправки TON');
-  };
-
-  const handleTransfer = () => {
-    toast.info('Функция перевода TON');
+  const handleAction = (action: string) => {
+    toast.info(`${action} - скоро будет доступно`);
   };
 
   return (
-    <div className="min-h-screen p-4 pb-24">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white mb-2">Мой кошелёк</h1>
-        <p className="text-gray-400 text-sm">
-          Вывод, пополнение, трансфер доступны только для TON
+    <div className="px-4 pt-4 pb-6 space-y-4">
+      {/* Header */}
+      <div className="mb-4">
+        <h1 className="text-xl font-bold text-white mb-1">Кошелёк</h1>
+        <p className="text-gray-400 text-xs">
+          Управление активами и NFT коллекцией
         </p>
       </div>
 
-      {/* Balance Section */}
-      <div className="cosmic-card rounded-xl p-6 mb-6 animate-fade-in-up">
-        <div className="grid grid-cols-2 gap-4 mb-6">
+      {/* Balance */}
+      <div className="cosmic-card p-4">
+        <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="text-center">
-            <div className="text-3xl mb-2">💎</div>
-            <div className="text-2xl font-bold text-white">{tonBalance}</div>
-            <div className="text-sm text-gray-400">TON</div>
+            <div className="text-2xl mb-1">💎</div>
+            <div className="text-xl font-bold text-white">{tonBalance}</div>
+            <div className="text-xs text-gray-400">TON</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl mb-2">🌟</div>
-            <div className="text-2xl font-bold text-neon-green">{cosmoBalance}</div>
-            <div className="text-sm text-gray-400">COSMO</div>
+            <div className="text-2xl mb-1">🌟</div>
+            <div className="text-xl font-bold text-neon-green">{cosmoBalance}</div>
+            <div className="text-xs text-gray-400">COSMO</div>
           </div>
         </div>
 
-        {/* Wallet Actions */}
-        <div className="grid grid-cols-3 gap-3">
+        {/* Actions */}
+        <div className="grid grid-cols-3 gap-2">
           <Button
-            onClick={handleTopUp}
-            className="cosmic-button text-black font-semibold flex flex-col items-center py-4"
+            onClick={() => handleAction('Пополнение')}
+            className="cosmic-button text-black font-semibold flex flex-col items-center py-3 text-xs"
           >
-            <Plus className="h-5 w-5 mb-1" />
-            <span className="text-xs">Пополнить</span>
+            <Plus className="h-4 w-4 mb-1" />
+            Пополнить
           </Button>
           <Button
-            onClick={handleSend}
-            className="cosmic-button text-black font-semibold flex flex-col items-center py-4"
+            onClick={() => handleAction('Отправка')}
+            className="cosmic-button text-black font-semibold flex flex-col items-center py-3 text-xs"
           >
-            <Send className="h-5 w-5 mb-1" />
-            <span className="text-xs">Отправить</span>
+            <Send className="h-4 w-4 mb-1" />
+            Отправить
           </Button>
           <Button
-            onClick={handleTransfer}
-            className="cosmic-button text-black font-semibold flex flex-col items-center py-4"
+            onClick={() => handleAction('Обмен')}
+            className="cosmic-button text-black font-semibold flex flex-col items-center py-3 text-xs"
           >
-            <ArrowUpDown className="h-5 w-5 mb-1" />
-            <span className="text-xs">Перевести</span>
+            <ArrowUpDown className="h-4 w-4 mb-1" />
+            Обмен
           </Button>
         </div>
       </div>
 
       {/* NFT Collection */}
-      <div className="cosmic-card rounded-xl p-4 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-semibold">NFT Коллекция</h3>
-          <Button variant="ghost" className="text-neon-green text-sm">
-            <ExternalLink className="h-4 w-4 mr-1" />
-            Добавить
+      <div className="cosmic-card p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-white font-semibold text-sm">NFT Коллекция</h3>
+          <Button variant="ghost" className="text-neon-green text-xs p-1">
+            <ExternalLink className="h-3 w-3 mr-1" />
+            Купить
           </Button>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           {nfts.map((nft) => (
             <div key={nft.id} className="bg-cosmic-gray rounded-lg p-3 border border-neon-green/20">
               <div className="text-center">
-                <div className="text-3xl mb-2">{nft.image}</div>
-                <div className="text-sm font-medium text-white">{nft.name}</div>
-                <div className="text-xs text-neon-green">{nft.rarity}</div>
+                <div className="text-2xl mb-1">{nft.image}</div>
+                <div className="text-xs font-medium text-white leading-tight mb-1">{nft.name}</div>
+                <div className="text-xs text-neon-green mb-1">{nft.rarity}</div>
+                <div className="text-xs text-gray-400">{nft.price}</div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Transaction History */}
-      <div className="cosmic-card rounded-xl p-4">
-        <h3 className="text-white font-semibold mb-4">История транзакций</h3>
-        <div className="space-y-3">
+      {/* Transactions */}
+      <div className="cosmic-card p-4">
+        <h3 className="text-white font-semibold mb-3 text-sm">История операций</h3>
+        <div className="space-y-2">
           {transactions.map((tx) => (
-            <div key={tx.id} className="flex items-center justify-between p-3 bg-cosmic-gray rounded-lg">
-              <div className="flex items-center space-x-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  tx.type === 'Заработано' ? 'bg-green-500/20 text-green-400' :
-                  tx.type === 'Реинвест' ? 'bg-blue-500/20 text-blue-400' :
-                  'bg-red-500/20 text-red-400'
+            <div key={tx.id} className="flex items-center justify-between p-2 bg-cosmic-gray rounded-lg">
+              <div className="flex items-center space-x-2">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+                  tx.type === 'Заработано' || tx.type === 'Пополнение' || tx.type === 'Бонус' || tx.type === 'Реферал' 
+                    ? 'bg-green-500/20 text-green-400' 
+                    : 'bg-blue-500/20 text-blue-400'
                 }`}>
-                  {tx.type === 'Заработано' ? '↗️' : 
-                   tx.type === 'Реинвест' ? '🔄' : '↙️'}
+                  {tx.type === 'Заработано' || tx.type === 'Пополнение' || tx.type === 'Бонус' || tx.type === 'Реферал' ? '↗' : '↙'}
                 </div>
                 <div>
-                  <div className="text-white font-medium text-sm">{tx.type}</div>
+                  <div className="text-white font-medium text-xs">{tx.type}</div>
                   <div className="text-gray-400 text-xs">{tx.date}</div>
                 </div>
               </div>
               <div className="text-right">
-                <div className={`font-semibold ${
-                  tx.amount.startsWith('+') ? 'text-green-400' : 'text-red-400'
+                <div className={`font-semibold text-xs ${
+                  tx.amount.startsWith('+') ? 'text-green-400' : 'text-blue-400'
                 }`}>
                   {tx.amount}
                 </div>
-                <div className={`text-xs ${
-                  tx.status === 'completed' ? 'text-green-400' : 'text-yellow-400'
-                }`}>
-                  {tx.status === 'completed' ? '✓ Завершено' : '⏳ В обработке'}
-                </div>
+                <div className="text-xs text-green-400">✓</div>
               </div>
             </div>
           ))}
