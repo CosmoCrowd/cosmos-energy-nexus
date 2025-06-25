@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,18 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				neon: {
+					green: '#00ff88',
+					blue: '#00aaff',
+					purple: '#aa00ff',
+					pink: '#ff0088'
+				},
+				cosmic: {
+					dark: '#0a0a0f',
+					darker: '#050508',
+					gray: '#1a1a2e',
+					light: '#16213e'
 				}
 			},
 			borderRadius: {
@@ -70,25 +83,45 @@ export default {
 			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
+				},
+				'neon-pulse': {
+					'0%, 100%': { 
+						boxShadow: '0 0 5px theme(colors.neon.green), 0 0 10px theme(colors.neon.green), 0 0 15px theme(colors.neon.green)' 
 					},
-					to: {
-						height: '0'
+					'50%': { 
+						boxShadow: '0 0 10px theme(colors.neon.green), 0 0 20px theme(colors.neon.green), 0 0 30px theme(colors.neon.green)' 
 					}
+				},
+				'particle-float': {
+					'0%, 100%': { transform: 'translateY(0px) rotate(0deg)', opacity: '0.7' },
+					'50%': { transform: 'translateY(-10px) rotate(180deg)', opacity: '1' }
+				},
+				'cosmic-rotate': {
+					'0%': { transform: 'rotate(0deg)' },
+					'100%': { transform: 'rotate(360deg)' }
+				},
+				'fade-in-up': {
+					'0%': { opacity: '0', transform: 'translateY(20px)' },
+					'100%': { opacity: '1', transform: 'translateY(0)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'neon-pulse': 'neon-pulse 2s ease-in-out infinite',
+				'particle-float': 'particle-float 3s ease-in-out infinite',
+				'cosmic-rotate': 'cosmic-rotate 20s linear infinite',
+				'fade-in-up': 'fade-in-up 0.5s ease-out'
+			},
+			backgroundImage: {
+				'cosmic-gradient': 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%)',
+				'neon-gradient': 'linear-gradient(90deg, #00ff88 0%, #00aaff 50%, #aa00ff 100%)'
 			}
 		}
 	},
