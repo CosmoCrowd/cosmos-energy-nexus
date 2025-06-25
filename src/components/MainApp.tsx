@@ -37,21 +37,21 @@ const MainApp = () => {
         </div>
 
         {/* Bottom Navigation */}
-        <div className="fixed bottom-0 left-0 right-0 cosmic-card border-t border-neon-green/20 px-2 py-1 backdrop-blur-lg">
+        <div className="fixed bottom-0 left-0 right-0 cosmic-card border-t border-neon-green/20 px-2 py-2 backdrop-blur-lg">
           <div className="flex justify-around items-center max-w-lg mx-auto">
             {navigationItems.map((item) => (
               <Button
                 key={item.id}
                 variant="ghost"
                 onClick={() => setCurrentScreen(item.id as Screen)}
-                className={`flex flex-col items-center py-2 px-2 rounded-lg text-xs transition-all duration-200 min-w-0 flex-1 ${
+                className={`flex flex-col items-center py-2 px-2 rounded-lg text-sm transition-all duration-200 min-w-0 flex-1 ${
                   currentScreen === item.id
                     ? 'bg-neon-green/20 text-neon-green border border-neon-green/30'
                     : 'text-gray-400 hover:text-white hover:bg-cosmic-light/30'
                 }`}
               >
-                <span className="text-lg mb-0.5 leading-none">{item.icon}</span>
-                <span className="text-[10px] leading-tight truncate">{item.label}</span>
+                <span className="text-xl mb-1 leading-none">{item.icon}</span>
+                <span className="text-xs leading-tight truncate">{item.label}</span>
               </Button>
             ))}
           </div>

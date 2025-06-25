@@ -25,11 +25,11 @@ const WalletScreen = () => {
   };
 
   return (
-    <div className="px-4 pt-4 pb-6 space-y-4">
+    <div className="min-h-screen px-4 pt-4 pb-24 space-y-4">
       {/* Header */}
       <div className="mb-4">
         <h1 className="text-xl font-bold text-white mb-1">Кошелёк</h1>
-        <p className="text-gray-400 text-xs">
+        <p className="text-gray-400 text-sm">
           Управление активами и NFT коллекцией
         </p>
       </div>
@@ -40,12 +40,12 @@ const WalletScreen = () => {
           <div className="text-center">
             <div className="text-2xl mb-1">💎</div>
             <div className="text-xl font-bold text-white">{tonBalance}</div>
-            <div className="text-xs text-gray-400">TON</div>
+            <div className="text-sm text-gray-400">TON</div>
           </div>
           <div className="text-center">
             <div className="text-2xl mb-1">🌟</div>
             <div className="text-xl font-bold text-neon-green">{cosmoBalance}</div>
-            <div className="text-xs text-gray-400">COSMO</div>
+            <div className="text-sm text-gray-400">COSMO</div>
           </div>
         </div>
 
@@ -53,21 +53,21 @@ const WalletScreen = () => {
         <div className="grid grid-cols-3 gap-2">
           <Button
             onClick={() => handleAction('Пополнение')}
-            className="cosmic-button text-black font-semibold flex flex-col items-center py-3 text-xs"
+            className="cosmic-button text-black font-semibold flex flex-col items-center py-3 text-sm"
           >
             <Plus className="h-4 w-4 mb-1" />
             Пополнить
           </Button>
           <Button
             onClick={() => handleAction('Отправка')}
-            className="cosmic-button text-black font-semibold flex flex-col items-center py-3 text-xs"
+            className="cosmic-button text-black font-semibold flex flex-col items-center py-3 text-sm"
           >
             <Send className="h-4 w-4 mb-1" />
             Отправить
           </Button>
           <Button
             onClick={() => handleAction('Обмен')}
-            className="cosmic-button text-black font-semibold flex flex-col items-center py-3 text-xs"
+            className="cosmic-button text-black font-semibold flex flex-col items-center py-3 text-sm"
           >
             <ArrowUpDown className="h-4 w-4 mb-1" />
             Обмен
@@ -78,20 +78,20 @@ const WalletScreen = () => {
       {/* NFT Collection */}
       <div className="cosmic-card p-4">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-white font-semibold text-sm">NFT Коллекция</h3>
-          <Button variant="ghost" className="text-neon-green text-xs p-1">
-            <ExternalLink className="h-3 w-3 mr-1" />
+          <h3 className="text-white font-semibold text-base">NFT Коллекция</h3>
+          <Button variant="ghost" className="text-neon-green text-sm p-1">
+            <ExternalLink className="h-4 w-4 mr-1" />
             Купить
           </Button>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3">
           {nfts.map((nft) => (
             <div key={nft.id} className="bg-cosmic-gray rounded-lg p-3 border border-neon-green/20">
               <div className="text-center">
-                <div className="text-2xl mb-1">{nft.image}</div>
-                <div className="text-xs font-medium text-white leading-tight mb-1">{nft.name}</div>
-                <div className="text-xs text-neon-green mb-1">{nft.rarity}</div>
-                <div className="text-xs text-gray-400">{nft.price}</div>
+                <div className="text-2xl mb-2">{nft.image}</div>
+                <div className="text-sm font-medium text-white leading-tight mb-1">{nft.name}</div>
+                <div className="text-sm text-neon-green mb-1">{nft.rarity}</div>
+                <div className="text-sm text-gray-400">{nft.price}</div>
               </div>
             </div>
           ))}
@@ -100,12 +100,12 @@ const WalletScreen = () => {
 
       {/* Transactions */}
       <div className="cosmic-card p-4">
-        <h3 className="text-white font-semibold mb-3 text-sm">История операций</h3>
+        <h3 className="text-white font-semibold mb-3 text-base">История операций</h3>
         <div className="space-y-2">
           {transactions.map((tx) => (
-            <div key={tx.id} className="flex items-center justify-between p-2 bg-cosmic-gray rounded-lg">
-              <div className="flex items-center space-x-2">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+            <div key={tx.id} className="flex items-center justify-between p-3 bg-cosmic-gray rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
                   tx.type === 'Заработано' || tx.type === 'Пополнение' || tx.type === 'Бонус' || tx.type === 'Реферал' 
                     ? 'bg-green-500/20 text-green-400' 
                     : 'bg-blue-500/20 text-blue-400'
@@ -113,12 +113,12 @@ const WalletScreen = () => {
                   {tx.type === 'Заработано' || tx.type === 'Пополнение' || tx.type === 'Бонус' || tx.type === 'Реферал' ? '↗' : '↙'}
                 </div>
                 <div>
-                  <div className="text-white font-medium text-xs">{tx.type}</div>
+                  <div className="text-white font-medium text-sm">{tx.type}</div>
                   <div className="text-gray-400 text-xs">{tx.date}</div>
                 </div>
               </div>
               <div className="text-right">
-                <div className={`font-semibold text-xs ${
+                <div className={`font-semibold text-sm ${
                   tx.amount.startsWith('+') ? 'text-green-400' : 'text-blue-400'
                 }`}>
                   {tx.amount}

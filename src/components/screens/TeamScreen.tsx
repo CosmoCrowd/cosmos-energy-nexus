@@ -26,7 +26,7 @@ const TeamScreen = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 pb-24">
+    <div className="min-h-screen px-4 pt-4 pb-24">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white mb-2">Команда</h1>
         <p className="text-gray-400 text-sm">
@@ -36,21 +36,21 @@ const TeamScreen = () => {
 
       {/* Team Stats */}
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="cosmic-card rounded-xl p-4 text-center">
-          <div className="text-2xl mb-2">👥</div>
-          <div className="text-xl font-bold text-neon-green">{teamStructure.user.directReferrals}</div>
+        <div className="cosmic-card p-4 text-center">
+          <div className="text-3xl mb-2">👥</div>
+          <div className="text-2xl font-bold text-neon-green">{teamStructure.user.directReferrals}</div>
           <div className="text-sm text-gray-400">Прямых рефералов</div>
         </div>
-        <div className="cosmic-card rounded-xl p-4 text-center">
-          <div className="text-2xl mb-2">🔮</div>
-          <div className="text-xl font-bold text-neon-blue">{teamStructure.user.matrixCount}</div>
+        <div className="cosmic-card p-4 text-center">
+          <div className="text-3xl mb-2">🔮</div>
+          <div className="text-2xl font-bold text-neon-blue">{teamStructure.user.matrixCount}</div>
           <div className="text-sm text-gray-400">В матрице</div>
         </div>
       </div>
 
       {/* Team Structure */}
-      <div className="cosmic-card rounded-xl p-4 mb-6">
-        <h3 className="text-white font-semibold mb-4 flex items-center">
+      <div className="cosmic-card p-4 mb-6">
+        <h3 className="text-white font-semibold mb-4 flex items-center text-base">
           <Users className="h-5 w-5 mr-2 text-neon-green" />
           Структура команды
         </h3>
@@ -58,11 +58,11 @@ const TeamScreen = () => {
         {/* Upline */}
         <div className="mb-4">
           <div className="flex items-center p-3 bg-neon-blue/10 border border-neon-blue/30 rounded-lg">
-            <div className="w-10 h-10 bg-neon-blue/20 rounded-full flex items-center justify-center mr-3">
-              <span className="text-lg">{teamStructure.upline.avatar}</span>
+            <div className="w-12 h-12 bg-neon-blue/20 rounded-full flex items-center justify-center mr-3">
+              <span className="text-xl">{teamStructure.upline.avatar}</span>
             </div>
             <div className="flex-1">
-              <div className="text-white font-medium">{teamStructure.upline.name}</div>
+              <div className="text-white font-medium text-base">{teamStructure.upline.name}</div>
               <div className="text-neon-blue text-sm">Уровень {teamStructure.upline.level}</div>
             </div>
           </div>
@@ -72,11 +72,11 @@ const TeamScreen = () => {
         <div className="mb-4">
           <Button
             onClick={() => toggleNode(teamStructure.user.id)}
-            className="w-full flex items-center justify-between p-3 bg-neon-green/10 border border-neon-green/30 rounded-lg hover:bg-neon-green/20"
+            className="w-full flex items-center justify-between p-3 bg-neon-green/10 border border-neon-green/30 rounded-lg hover:bg-neon-green/20 text-base"
           >
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-neon-green/20 rounded-full flex items-center justify-center mr-3">
-                <span className="text-lg">{teamStructure.user.avatar}</span>
+              <div className="w-12 h-12 bg-neon-green/20 rounded-full flex items-center justify-center mr-3">
+                <span className="text-xl">{teamStructure.user.avatar}</span>
               </div>
               <div className="text-left">
                 <div className="text-white font-medium">{teamStructure.user.name}</div>
@@ -91,23 +91,23 @@ const TeamScreen = () => {
 
           {/* Referrals */}
           {expandedNodes.includes(teamStructure.user.id) && (
-            <div className="ml-6 mt-3 space-y-2">
+            <div className="ml-6 mt-3 space-y-3">
               {teamStructure.referrals.map((referral) => (
                 <div key={referral.id} className="flex items-center justify-between p-3 bg-cosmic-gray rounded-lg border border-gray-600">
                   <div className="flex items-center">
-                    <div className="w-8 h-8 bg-cosmic-light rounded-full flex items-center justify-center mr-3">
-                      <span className="text-sm">{referral.avatar}</span>
+                    <div className="w-10 h-10 bg-cosmic-light rounded-full flex items-center justify-center mr-3">
+                      <span className="text-base">{referral.avatar}</span>
                     </div>
                     <div>
-                      <div className="text-white text-sm font-medium">{referral.name}</div>
-                      <div className="text-gray-400 text-xs">Уровень {referral.level}</div>
+                      <div className="text-white text-base font-medium">{referral.name}</div>
+                      <div className="text-gray-400 text-sm">Уровень {referral.level}</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className={`text-sm font-semibold ${referral.active ? 'text-neon-green' : 'text-gray-400'}`}>
+                    <div className={`text-base font-semibold ${referral.active ? 'text-neon-green' : 'text-gray-400'}`}>
                       {referral.earned}
                     </div>
-                    <div className={`text-xs ${referral.active ? 'text-green-400' : 'text-gray-500'}`}>
+                    <div className={`text-sm ${referral.active ? 'text-green-400' : 'text-gray-500'}`}>
                       {referral.active ? '🟢 Активен' : '🔴 Неактивен'}
                     </div>
                   </div>
@@ -119,24 +119,24 @@ const TeamScreen = () => {
       </div>
 
       {/* Matrix Visualization */}
-      <div className="cosmic-card rounded-xl p-4">
-        <h3 className="text-white font-semibold mb-4">Матрица активности</h3>
+      <div className="cosmic-card p-4">
+        <h3 className="text-white font-semibold mb-4 text-base">Матрица активности</h3>
         <div className="text-center mb-4">
           <div className="inline-block p-4 bg-neon-green/10 border border-neon-green/30 rounded-full">
-            <span className="text-2xl">{teamStructure.user.avatar}</span>
+            <span className="text-3xl">{teamStructure.user.avatar}</span>
           </div>
         </div>
         
         {/* Matrix levels visualization */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {[1, 2, 3].map((level) => (
             <div key={level} className="text-center">
-              <div className="text-gray-400 text-xs mb-2">Уровень {level}</div>
-              <div className="flex justify-center space-x-2">
+              <div className="text-gray-400 text-sm mb-3">Уровень {level}</div>
+              <div className="flex justify-center space-x-3">
                 {Array.from({ length: Math.pow(2, level) }, (_, i) => (
                   <div
                     key={i}
-                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs ${
+                    className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-base ${
                       Math.random() > 0.3 
                         ? 'bg-neon-green/20 border-neon-green text-neon-green' 
                         : 'bg-gray-800 border-gray-600 text-gray-500'
