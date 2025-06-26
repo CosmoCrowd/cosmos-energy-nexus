@@ -5,6 +5,7 @@ import { Wallet } from '@/types/telegram';
 
 interface WalletContextType {
   isConnected: boolean;
+  isLoading: boolean;
   tonBalance: number;
   tonPrice: number;
   userLevel: number;
@@ -18,22 +19,26 @@ interface WalletContextType {
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
-// Главный кошелек проекта
 const PROJECT_WALLET = 'UQBDN8ARRy-7qUYEmx9v6IxaMmcfHrbTrh6ZiFVQnzmsqyBi';
 
 export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [tonBalance, setTonBalance] = useState(0);
   const [tonPrice, setTonPrice] = useState(0);
   const [userLevel, setUserLevel] = useState(0);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [totalUsers] = useState(0); // Реальные данные будут загружаться с сервера
+  const [totalUsers] = useState(0);
 
   useEffect(() => {
+    console.log('Инициализация WalletProvider');
+    
     // Подписка на изменения кошелька
     tonService.onWalletChange((wallet: Wallet | null) => {
+      console.log('Получено изменение кошелька:', wallet);
       setIsConnected(!!wallet);
       setWalletAddress(wallet?.account?.address || null);
+      setIsLoading(false); // Убираем загрузку после получения первого обновления
       
       if (wallet) {
         loadWalletData();
@@ -107,7 +112,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     try {
       const success = await tonService.sendTransaction(amount, PROJECT_WALLET);
       if (success) {
-        // Обновляем баланс после успешной транзакции
         setTimeout(loadWalletData, 2000);
       }
       return success;
@@ -124,6 +128,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   return (
     <WalletContext.Provider value={{
       isConnected,
+      isLoading,
       tonBalance,
       tonPrice,
       userLevel,

@@ -5,22 +5,103 @@ class TonService {
   private tonConnect: TonConnect | null = null;
   private wallet: Wallet | null = null;
   private listeners: ((wallet: Wallet | null) => void)[] = [];
+  private isInitialized = false;
+  private initPromise: Promise<void> | null = null;
 
   constructor() {
-    this.initTonConnect();
+    this.initPromise = this.initTonConnect();
   }
 
-  private async initTonConnect() {
-    if (typeof window !== 'undefined' && window.TonConnect) {
-      this.tonConnect = new window.TonConnect();
-      this.tonConnect.onStatusChange((wallet) => {
-        this.wallet = wallet;
-        this.notifyListeners(wallet);
-      });
+  private async initTonConnect(): Promise<void> {
+    // Ждем загрузки Telegram WebApp
+    await this.waitForTelegram();
+    
+    if (typeof window !== 'undefined') {
+      // Ждем загрузки TonConnect
+      await this.waitForTonConnect();
+      
+      if (window.TonConnect) {
+        try {
+          this.tonConnect = new window.TonConnect();
+          
+          // Проверяем существующее подключение
+          if (this.tonConnect.connected && this.tonConnect.account) {
+            this.wallet = {
+              device: {
+                platform: 'telegram',
+                appName: 'Telegram',
+                appVersion: '1.0',
+                maxProtocolVersion: 2,
+                features: []
+              },
+              provider: 'telegram',
+              account: this.tonConnect.account
+            };
+          }
+          
+          this.tonConnect.onStatusChange((wallet) => {
+            console.log('Изменение статуса кошелька:', wallet);
+            this.wallet = wallet;
+            this.notifyListeners(wallet);
+          });
+          
+          this.isInitialized = true;
+          console.log('TonConnect успешно инициализирован');
+          
+          // Уведомляем о текущем состоянии
+          this.notifyListeners(this.wallet);
+        } catch (error) {
+          console.error('Ошибка инициализации TonConnect:', error);
+          this.isInitialized = true; // Помечаем как инициализированный даже при ошибке
+          this.notifyListeners(null);
+        }
+      } else {
+        console.error('TonConnect не доступен');
+        this.isInitialized = true;
+        this.notifyListeners(null);
+      }
     }
   }
 
+  private waitForTelegram(): Promise<void> {
+    return new Promise((resolve) => {
+      if (window.Telegram?.WebApp) {
+        resolve();
+      } else {
+        const checkTelegram = () => {
+          if (window.Telegram?.WebApp) {
+            resolve();
+          } else {
+            setTimeout(checkTelegram, 100);
+          }
+        };
+        checkTelegram();
+      }
+    });
+  }
+
+  private waitForTonConnect(): Promise<void> {
+    return new Promise((resolve) => {
+      if (window.TonConnect) {
+        resolve();
+      } else {
+        const checkTonConnect = () => {
+          if (window.TonConnect) {
+            resolve();
+          } else {
+            setTimeout(checkTonConnect, 100);
+          }
+        };
+        checkTonConnect();
+      }
+    });
+  }
+
   async connectWallet(): Promise<boolean> {
+    if (!this.isInitialized) {
+      await this.initPromise;
+    }
+
     if (!this.tonConnect) {
       console.error('TonConnect не инициализирован');
       return false;
@@ -36,6 +117,7 @@ class TonService {
         ]
       });
 
+      console.log('Кошелек подключен:', result);
       return true;
     } catch (error) {
       console.error('Ошибка подключения кошелька:', error);
@@ -59,7 +141,7 @@ class TonService {
     try {
       const response = await fetch(`https://toncenter.com/api/v2/getAddressBalance?address=${this.wallet.account.address}`);
       const data = await response.json();
-      return parseFloat(data.result) / 1000000000; // Конвертируем из nanoTON в TON
+      return parseFloat(data.result) / 1000000000;
     } catch (error) {
       console.error('Ошибка получения баланса:', error);
       return 0;
@@ -84,14 +166,12 @@ class TonService {
     }
 
     try {
-      // Здесь должна быть логика отправки транзакции
-      // Для демонстрации используем базовую структуру
       const transaction = {
-        validUntil: Math.floor(Date.now() / 1000) + 300, // 5 минут
+        validUntil: Math.floor(Date.now() / 1000) + 300,
         messages: [
           {
             address: destinationAddress,
-            amount: (amount * 1000000000).toString(), // Конвертируем в nanoTON
+            amount: (amount * 1000000000).toString(),
           }
         ]
       };
@@ -106,8 +186,11 @@ class TonService {
 
   onWalletChange(callback: (wallet: Wallet | null) => void) {
     this.listeners.push(callback);
-    // Сразу вызываем callback с текущим состоянием
-    callback(this.wallet);
+    
+    // Если уже инициализирован, сразу вызываем callback
+    if (this.isInitialized) {
+      callback(this.wallet);
+    }
   }
 
   private notifyListeners(wallet: Wallet | null) {
@@ -124,6 +207,10 @@ class TonService {
 
   getWallet(): Wallet | null {
     return this.wallet;
+  }
+
+  isReady(): boolean {
+    return this.isInitialized;
   }
 }
 
