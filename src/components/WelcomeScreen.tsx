@@ -4,23 +4,33 @@ import { Button } from '@/components/ui/button';
 import { useWallet } from '@/context/WalletContext';
 import { CosmicWallet } from '@/components/ui/cosmic-icons';
 import { toast } from 'sonner';
+import WalletConnectionStatus from '@/components/WalletConnectionStatus';
 
 const WelcomeScreen = () => {
   const { connectWallet } = useWallet();
   const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   const handleConnect = async () => {
     setIsConnecting(true);
+    setConnectionError(null);
+    
     try {
+      console.log('Начинаем подключение кошелька...');
       const success = await connectWallet();
+      
       if (success) {
         toast.success('Кошелек успешно подключен!');
       } else {
-        toast.error('Ошибка подключения кошелька');
+        const error = 'Не удалось подключить кошелек. Проверьте сеть TON.';
+        setConnectionError(error);
+        toast.error(error);
       }
     } catch (error) {
       console.error('Ошибка подключения:', error);
-      toast.error('Не удалось подключить кошелек');
+      const errorMessage = 'Ошибка подключения. Убедитесь, что у вас установлен кошелек TON.';
+      setConnectionError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsConnecting(false);
     }
@@ -61,7 +71,6 @@ const WelcomeScreen = () => {
             <div className="w-20 h-1 bg-neon-gradient mx-auto rounded-full animate-width-pulse"></div>
           </div>
 
-          {/* Description */}
           <div className="text-center mb-8 space-y-4 text-gray-300 text-sm leading-relaxed">
             <h2 className="text-xl font-semibold text-neon-blue mb-4 animate-pulse">
               ⚡ Матрица Энергий ⚡
@@ -97,6 +106,14 @@ const WelcomeScreen = () => {
             </div>
           </div>
 
+          {/* Connection Status */}
+          <div className="mb-4 flex justify-center">
+            <WalletConnectionStatus 
+              isConnecting={isConnecting} 
+              error={connectionError} 
+            />
+          </div>
+
           {/* Connect Button */}
           <div className="text-center animate-fade-in-up" style={{animationDelay: '1.2s'}}>
             <Button
@@ -115,7 +132,7 @@ const WelcomeScreen = () => {
               )}
             </Button>
             <p className="text-xs text-gray-400 mt-3 animate-pulse">
-              Используйте встроенный кошелек Telegram
+              Поддерживаются Telegram Wallet и Tonkeeper
             </p>
           </div>
         </div>

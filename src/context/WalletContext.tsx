@@ -30,15 +30,25 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [totalUsers] = useState(12847);
 
   useEffect(() => {
-    console.log('Инициализация WalletProvider');
+    console.log('Инициализация WalletProvider с реальным TON Connect');
     
     let loadingTimeout: NodeJS.Timeout;
     
     // Подписка на изменения кошелька
     tonService.onWalletChange((wallet: any) => {
       console.log('Получено изменение кошелька:', wallet);
-      setIsConnected(!!wallet);
+      
+      const connected = !!wallet;
+      setIsConnected(connected);
       setWalletAddress(wallet?.account?.address || null);
+      
+      // Валидируем адрес кошелька если он есть
+      if (wallet?.account?.address) {
+        const isValid = tonService.validateWalletAddress(wallet.account.address);
+        if (!isValid) {
+          console.warn('Получен невалидный адрес кошелька');
+        }
+      }
       
       // Убираем загрузку через 2 секунды максимум
       if (loadingTimeout) clearTimeout(loadingTimeout);
@@ -46,7 +56,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(false);
       }, 1500);
       
-      if (wallet) {
+      if (connected) {
         loadWalletData();
       } else {
         setTonBalance(0);
@@ -74,10 +84,11 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const loadWalletData = async () => {
     try {
+      console.log('Загружаем данные реального кошелька...');
       const balance = await tonService.getBalance();
       setTonBalance(balance);
       
-      // Определяем уровень пользователя на основе баланса
+      // Определяем уровень пользователя на основе реального баланса
       if (balance >= 256) setUserLevel(10);
       else if (balance >= 128) setUserLevel(9);
       else if (balance >= 64) setUserLevel(8);
@@ -89,6 +100,8 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       else if (balance >= 1) setUserLevel(2);
       else if (balance >= 0.5) setUserLevel(1);
       else setUserLevel(0);
+      
+      console.log('Данные кошелька загружены:', { balance, userLevel });
     } catch (error) {
       console.error('Ошибка загрузки данных кошелька:', error);
     }
@@ -106,7 +119,15 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const connectWallet = async (): Promise<boolean> => {
     try {
+      console.log('Подключение к реальному кошельку TON...');
       const success = await tonService.connectWallet();
+      
+      if (success) {
+        console.log('Кошелек успешно подключен');
+      } else {
+        console.error('Не удалось подключить кошелек');
+      }
+      
       return success;
     } catch (error) {
       console.error('Ошибка подключения кошелька:', error);
@@ -117,6 +138,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const disconnectWallet = async (): Promise<void> => {
     try {
       await tonService.disconnectWallet();
+      console.log('Кошелек отключен');
     } catch (error) {
       console.error('Ошибка отключения кошелька:', error);
     }
@@ -124,10 +146,24 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const sendPayment = async (amount: number): Promise<boolean> => {
     try {
-      const success = await tonService.sendTransaction(amount, PROJECT_WALLET);
-      if (success) {
-        setTimeout(loadWalletData, 2000);
+      console.log('Отправка реального платежа:', amount, 'TON');
+      
+      // Валидируем адрес получателя
+      if (!tonService.validateWalletAddress(PROJECT_WALLET)) {
+        console.error('Невалидный адрес получателя');
+        return false;
       }
+      
+      const success = await tonService.sendTransaction(amount, PROJECT_WALLET);
+      
+      if (success) {
+        console.log('Платеж успешно отправлен');
+        // Обновляем баланс через 3 секунды для учета транзакции
+        setTimeout(loadWalletData, 3000);
+      } else {
+        console.error('Ошибка отправки платежа');
+      }
+      
       return success;
     } catch (error) {
       console.error('Ошибка отправки платежа:', error);
@@ -136,6 +172,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const refreshBalance = async (): Promise<void> => {
+    console.log('Обновление баланса...');
     await loadWalletData();
   };
 
