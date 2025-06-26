@@ -68,7 +68,6 @@
     overflow-x: hidden;
   }
 
-  /* Disable zoom on iOS */
   input, textarea, select {
     font-size: 16px !important;
   }
@@ -87,34 +86,34 @@
   
   .neon-border {
     border: 1px solid theme(colors.neon.green);
-    box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
   }
   
   .neon-text {
     color: theme(colors.neon.green);
-    text-shadow: 0 0 12px rgba(0, 255, 136, 0.6);
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
   }
   
   .cosmic-card {
     background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.85) 100%);
     border: 1px solid rgba(0, 255, 136, 0.25);
-    backdrop-filter: blur(16px);
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 136, 0.1);
   }
   
   .cosmic-button {
     background: linear-gradient(135deg, theme(colors.neon.green) 0%, #00cc77 100%);
-    border-radius: 12px;
-    font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 16px;
+    font-weight: 700;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: none;
-    box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
+    box-shadow: 0 6px 25px rgba(0, 255, 136, 0.4);
   }
   
   .cosmic-button:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 30px rgba(0, 255, 136, 0.5);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 40px rgba(0, 255, 136, 0.6);
   }
 
   .cosmic-button:active {
@@ -129,109 +128,336 @@
     padding-right: env(safe-area-inset-right);
   }
 
-  /* Enhanced animations */
-  .animate-fade-in-up {
-    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    opacity: 0;
+  /* Уникальные космические элементы */
+  .cosmic-particle {
+    width: 3px;
+    height: 3px;
+    background: radial-gradient(circle, theme(colors.neon.green) 0%, transparent 70%);
+    border-radius: 50%;
   }
 
-  .animate-scale-in {
-    animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  .cosmic-orb {
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, theme(colors.neon.blue) 0%, theme(colors.neon.purple) 100%);
+    border-radius: 50%;
+    opacity: 0.7;
   }
 
-  .animate-neon-pulse {
-    animation: neonPulse 2s ease-in-out infinite;
+  .cosmic-star {
+    width: 2px;
+    height: 2px;
+    background: theme(colors.neon.green);
+    border-radius: 50%;
+    opacity: 0.8;
   }
 
-  .animate-bounce {
-    animation: gentleBounce 2s ease-in-out infinite;
+  .cosmic-background {
+    background: 
+      radial-gradient(ellipse at 20% 50%, rgba(170, 0, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(0, 170, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 40% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%);
+  }
+
+  .cosmic-welcome-bg {
+    background: 
+      radial-gradient(circle at 30% 40%, rgba(170, 0, 255, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 70% 60%, rgba(0, 255, 136, 0.15) 0%, transparent 50%);
   }
 }
 
-/* Telegram-specific optimizations */
-@media (max-width: 480px) {
-  html {
-    font-size: 14px;
-  }
-  
-  .cosmic-card {
-    border-radius: 12px;
-  }
-  
-  .cosmic-button {
-    border-radius: 10px;
-  }
-}
-
-/* Enhanced keyframes */
-@keyframes fadeInUp {
-  from {
+/* Уникальные анимации */
+@keyframes cosmic-entrance {
+  0% {
     opacity: 0;
-    transform: translateY(30px);
+    transform: scale(0.5) rotate(-180deg);
   }
-  to {
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1) rotate(-90deg);
+  }
+  100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1) rotate(0deg);
   }
 }
 
-@keyframes scaleIn {
-  from {
+@keyframes welcome-entrance {
+  0% {
     opacity: 0;
-    transform: scale(0.8);
+    transform: translateY(50px) scale(0.8);
   }
-  to {
+  100% {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
-@keyframes neonPulse {
+@keyframes cosmic-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes cosmic-spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes cosmic-pulse {
   0%, 100% { 
-    box-shadow: 0 0 8px theme(colors.neon.green), 0 0 16px theme(colors.neon.green), 0 0 24px theme(colors.neon.green);
+    box-shadow: 0 0 10px theme(colors.neon.green), 0 0 20px theme(colors.neon.green);
     transform: scale(1);
   }
   50% { 
-    box-shadow: 0 0 12px theme(colors.neon.green), 0 0 24px theme(colors.neon.green), 0 0 36px theme(colors.neon.green);
+    box-shadow: 0 0 20px theme(colors.neon.green), 0 0 40px theme(colors.neon.green);
     transform: scale(1.05);
   }
 }
 
-@keyframes gentleBounce {
+@keyframes cosmic-glow {
+  0%, 100% { 
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+  }
+}
+
+@keyframes cosmic-bounce {
   0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
   40% {
-    transform: translateY(-8px);
+    transform: translateY(-10px) scale(1.1);
   }
   60% {
-    transform: translateY(-4px);
+    transform: translateY(-5px) scale(1.05);
+  }
+}
+
+@keyframes cosmic-wave {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
   }
 }
 
 @keyframes particle-float {
   0%, 100% { 
     transform: translateY(0px) rotate(0deg); 
-    opacity: 0.7; 
+    opacity: 0.4; 
   }
   50% { 
-    transform: translateY(-12px) rotate(180deg); 
+    transform: translateY(-15px) rotate(180deg); 
     opacity: 1; 
   }
 }
 
-/* Energy particle effects */
-.energy-particle {
-  background: radial-gradient(circle, theme(colors.neon.green) 0%, transparent 70%);
+@keyframes text-glow {
+  0%, 100% {
+    text-shadow: 0 0 10px theme(colors.neon.green);
+  }
+  50% {
+    text-shadow: 0 0 20px theme(colors.neon.green), 0 0 30px theme(colors.neon.green);
+  }
+}
+
+@keyframes text-shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
+}
+
+@keyframes width-pulse {
+  0%, 100% { width: 20px; }
+  50% { width: 80px; }
+}
+
+@keyframes width-expand {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+@keyframes border-glow {
+  0%, 100% {
+    border-color: rgba(0, 255, 136, 0.3);
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+  }
+  50% {
+    border-color: rgba(0, 255, 136, 0.6);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+  }
+}
+
+@keyframes counter-up {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-in-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes screen-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes button-glow {
+  0%, 100% {
+    box-shadow: 0 6px 25px rgba(0, 255, 136, 0.4);
+  }
+  50% {
+    box-shadow: 0 6px 25px rgba(0, 255, 136, 0.7), 0 0 30px rgba(0, 255, 136, 0.3);
+  }
+}
+
+@keyframes button-hover {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Применение анимаций */
+.animate-cosmic-entrance {
+  animation: cosmic-entrance 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-welcome-entrance {
+  animation: welcome-entrance 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-cosmic-spin {
+  animation: cosmic-spin 3s linear infinite;
+}
+
+.animate-cosmic-spin-slow {
+  animation: cosmic-spin-slow 8s linear infinite;
+}
+
+.animate-cosmic-pulse {
+  animation: cosmic-pulse 2s ease-in-out infinite;
+}
+
+.animate-cosmic-glow {
+  animation: cosmic-glow 2s ease-in-out infinite;
+}
+
+.animate-cosmic-bounce {
+  animation: cosmic-bounce 2s ease-in-out infinite;
+}
+
+.animate-cosmic-wave {
+  animation: cosmic-wave 1.5s ease-in-out infinite;
+}
+
+.cosmic-particle {
   animation: particle-float 4s ease-in-out infinite;
 }
 
-/* Smooth scrolling */
-* {
-  scroll-behavior: smooth;
+.cosmic-orb {
+  animation: particle-float 5s ease-in-out infinite;
 }
 
-/* Custom scrollbar for webkit browsers */
+.cosmic-star {
+  animation: particle-float 6s ease-in-out infinite;
+}
+
+.animate-text-glow {
+  animation: text-glow 2s ease-in-out infinite;
+}
+
+.animate-text-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  background-size: 200px 100%;
+  animation: text-shimmer 2s linear infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.animate-width-pulse {
+  animation: width-pulse 2s ease-in-out infinite;
+}
+
+.animate-width-expand {
+  animation: width-expand 1s ease-out forwards;
+}
+
+.animate-border-glow {
+  animation: border-glow 2s ease-in-out infinite;
+}
+
+.animate-counter-up {
+  animation: counter-up 0.6s ease-out forwards;
+}
+
+.animate-slide-in-down {
+  animation: slide-in-down 0.6s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.6s ease-out forwards;
+}
+
+.animate-screen-enter {
+  animation: screen-enter 0.5s ease-out forwards;
+}
+
+.animate-button-glow {
+  animation: button-glow 2s ease-in-out infinite;
+}
+
+.animate-button-hover {
+  animation: button-hover 2s ease-in-out infinite;
+}
+
+/* Медиа запросы для мобильных устройств */
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+  
+  .cosmic-card {
+    border-radius: 16px;
+  }
+  
+  .cosmic-button {
+    border-radius: 12px;
+  }
+}
+
+/* Кастомный скроллбар */
 ::-webkit-scrollbar {
   width: 4px;
 }
@@ -247,4 +473,9 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 255, 136, 0.5);
+}
+
+/* Плавная прокрутка */
+* {
+  scroll-behavior: smooth;
 }
