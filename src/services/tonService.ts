@@ -1,5 +1,4 @@
-
-import { TonConnect, toUserFriendlyAddress } from '@tonconnect/sdk';
+import { TonConnect } from '@tonconnect/sdk';
 
 interface WalletInfo {
   address: string;
@@ -106,12 +105,13 @@ class TonService {
     }
 
     try {
-      // Получаем список доступных кошельков
-      const walletsList = await this.tonConnect.getWallets();
-      console.log('Доступные кошельки:', walletsList);
-
-      // Подключаемся к кошельку
-      await this.tonConnect.connectWallet();
+      // Используем правильный метод connect вместо connectWallet
+      const walletConnectionSource = {
+        universalLink: 'https://app.tonkeeper.com/ton-connect',
+        bridgeUrl: 'https://bridge.tonapi.io/bridge'
+      };
+      
+      await this.tonConnect.connect(walletConnectionSource);
       
       return true;
     } catch (error) {
@@ -137,9 +137,8 @@ class TonService {
     try {
       // Получаем баланс через TonAPI
       const address = this.wallet.account.address;
-      const friendlyAddress = toUserFriendlyAddress(address);
       
-      const response = await fetch(`https://toncenter.com/api/v2/getAddressBalance?address=${friendlyAddress}`);
+      const response = await fetch(`https://toncenter.com/api/v2/getAddressBalance?address=${address}`);
       const data = await response.json();
       
       if (data.ok) {
@@ -228,7 +227,7 @@ class TonService {
   validateWalletAddress(address: string): boolean {
     try {
       // Проверяем формат TON адреса
-      const friendlyAddress = toUserFriendlyAddress(address);
+      const friendlyAddress = address;
       return friendlyAddress.length > 0;
     } catch (error) {
       console.error('Невалидный адрес кошелька:', error);
