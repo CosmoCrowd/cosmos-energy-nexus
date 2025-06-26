@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useWallet } from '@/context/WalletContext';
 import { Zap } from 'lucide-react';
@@ -12,7 +13,8 @@ interface PurchaseModalProps {
 }
 
 const PurchaseModal = ({ isOpen, selectedLevel, onClose }: PurchaseModalProps) => {
-  const { tonBalance, userLevel } = useWallet();
+  const { tonBalance, userLevel, sendPayment } = useWallet();
+  const [isPurchasing, setIsPurchasing] = useState(false);
 
   const calculateTotalPrice = (targetLevel: number) => {
     return energyLevels
@@ -20,17 +22,37 @@ const PurchaseModal = ({ isOpen, selectedLevel, onClose }: PurchaseModalProps) =
       .reduce((sum, level) => sum + level.price, 0);
   };
 
-  const confirmPurchase = () => {
+  const confirmPurchase = async () => {
     const totalPrice = calculateTotalPrice(selectedLevel);
-    if (tonBalance >= totalPrice) {
-      toast.success(`Куплены уровни до ${selectedLevel}!`);
-      onClose();
-    } else {
+    
+    if (tonBalance < totalPrice) {
       toast.error('Недостаточно TON');
+      return;
+    }
+
+    setIsPurchasing(true);
+    
+    try {
+      const success = await sendPayment(totalPrice);
+      
+      if (success) {
+        toast.success(`Уровни до ${selectedLevel} успешно куплены!`);
+        onClose();
+      } else {
+        toast.error('Ошибка при покупке');
+      }
+    } catch (error) {
+      console.error('Ошибка покупки:', error);
+      toast.error('Произошла ошибка при покупке');
+    } finally {
+      setIsPurchasing(false);
     }
   };
 
   if (!isOpen) return null;
+
+  const totalPrice = calculateTotalPrice(selectedLevel);
+  const canPurchase = tonBalance >= totalPrice;
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
@@ -48,11 +70,14 @@ const PurchaseModal = ({ isOpen, selectedLevel, onClose }: PurchaseModalProps) =
         
         <div className="bg-cosmic-gray/50 rounded-xl p-4 mb-4 text-center border border-neon-green/30">
           <p className="text-neon-green font-bold text-2xl animate-pulse">
-            {calculateTotalPrice(selectedLevel)} TON
+            {totalPrice} TON
+          </p>
+          <p className="text-gray-400 text-sm mt-1">
+            Ваш баланс: {tonBalance.toFixed(2)} TON
           </p>
         </div>
         
-        {tonBalance < calculateTotalPrice(selectedLevel) && (
+        {!canPurchase && (
           <p className="text-red-400 text-sm mb-4 text-center animate-pulse">
             ❌ Недостаточно средств
           </p>
@@ -63,15 +88,16 @@ const PurchaseModal = ({ isOpen, selectedLevel, onClose }: PurchaseModalProps) =
             onClick={onClose}
             variant="ghost"
             className="flex-1 border border-gray-600 hover:bg-gray-800"
+            disabled={isPurchasing}
           >
             Отмена
           </Button>
           <Button
             onClick={confirmPurchase}
-            className="flex-1 cosmic-button text-black font-semibold hover:scale-105 transition-transform"
-            disabled={tonBalance < calculateTotalPrice(selectedLevel)}
+            className="flex-1 cosmic-button text-black font-semibold hover:scale-105 transition-transform disabled:opacity-50"
+            disabled={!canPurchase || isPurchasing}
           >
-            Купить ⚡
+            {isPurchasing ? 'Покупка...' : 'Купить ⚡'}
           </Button>
         </div>
       </div>

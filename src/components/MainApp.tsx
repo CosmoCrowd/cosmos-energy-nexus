@@ -14,7 +14,6 @@ const MainApp = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Telegram Mini App initialization
     const initTelegram = () => {
       if (window.Telegram?.WebApp) {
         const tg = window.Telegram.WebApp;
@@ -22,12 +21,23 @@ const MainApp = () => {
         tg.expand();
         tg.setHeaderColor('#0a0a0f');
         tg.setBackgroundColor('#0a0a0f');
-        console.log('Telegram WebApp initialized');
+        console.log('Telegram WebApp инициализирован');
       }
+      
+      // Загружаем скрипт TonConnect
+      if (!window.TonConnect) {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js';
+        script.async = true;
+        script.onload = () => {
+          console.log('TonConnect загружен');
+        };
+        document.head.appendChild(script);
+      }
+      
       setIsLoaded(true);
     };
 
-    // Small delay to ensure Telegram WebApp is loaded
     setTimeout(initTelegram, 100);
   }, []);
 
@@ -55,7 +65,7 @@ const MainApp = () => {
             <div className="w-16 h-16 bg-neon-gradient rounded-full flex items-center justify-center mx-auto animate-neon-pulse">
               <span className="text-2xl">⚡</span>
             </div>
-            <div className="text-white font-semibold">Загрузка Космо...</div>
+            <div className="text-white font-semibold">Загрузка Cosmo Matrix...</div>
             <div className="flex space-x-1 justify-center">
               {[0, 1, 2].map((i) => (
                 <div
@@ -79,7 +89,7 @@ const MainApp = () => {
           {screens[currentScreen]}
         </div>
 
-        {/* Enhanced Bottom Navigation */}
+        {/* Bottom Navigation */}
         <div className="fixed bottom-0 left-0 right-0 cosmic-card border-t border-neon-green/30 px-2 py-2 backdrop-blur-xl z-50">
           <div className="flex justify-around items-center max-w-lg mx-auto">
             {navigationItems.map((item, index) => (

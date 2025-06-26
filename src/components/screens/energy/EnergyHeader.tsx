@@ -1,8 +1,15 @@
 
 import { useWallet } from '@/context/WalletContext';
+import { RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const EnergyHeader = () => {
-  const { tonBalance, cosmoBalance, userLevel, totalUsers } = useWallet();
+  const { tonBalance, tonPrice, userLevel, walletAddress, refreshBalance } = useWallet();
+
+  const formatAddress = (address: string | null) => {
+    if (!address) return '';
+    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  };
 
   return (
     <div className="cosmic-card p-4 animate-fade-in-up">
@@ -16,25 +23,34 @@ const EnergyHeader = () => {
           </div>
           <div>
             <div className="text-white font-semibold">Уровень {userLevel}</div>
-            <div className="text-gray-400 text-sm">Участник Ордена</div>
+            <div className="text-gray-400 text-xs">{formatAddress(walletAddress)}</div>
           </div>
         </div>
-        <div className="flex space-x-4">
+        <div className="flex items-center space-x-4">
+          <Button
+            onClick={refreshBalance}
+            variant="ghost"
+            size="sm"
+            className="p-2"
+          >
+            <RefreshCw className="h-4 w-4 text-gray-400" />
+          </Button>
           <div className="text-center">
-            <div className="text-white font-bold text-lg">{tonBalance}</div>
-            <div className="text-blue-400 text-sm">TON</div>
-          </div>
-          <div className="text-center">
-            <div className="text-neon-green font-bold text-lg animate-pulse">{cosmoBalance}</div>
-            <div className="text-neon-green text-sm">COSMO</div>
+            <div className="flex items-center space-x-1">
+              <div className="text-white font-bold text-lg">{tonBalance.toFixed(2)}</div>
+              <div className="text-blue-400 text-sm">TON</div>
+            </div>
+            <div className="text-gray-400 text-xs">
+              ${(tonBalance * tonPrice).toFixed(2)}
+            </div>
           </div>
         </div>
       </div>
       
-      <div className="bg-neon-green/10 rounded-xl p-3 text-center border border-neon-green/30 animate-neon-pulse">
-        <span className="text-neon-green font-semibold">
-          ⚡ {totalUsers.toLocaleString()} участников активны
-        </span>
+      <div className="bg-neon-green/10 rounded-xl p-3 text-center border border-neon-green/30">
+        <div className="text-neon-green font-semibold text-sm">
+          💎 TON: ${tonPrice.toFixed(2)}
+        </div>
       </div>
     </div>
   );

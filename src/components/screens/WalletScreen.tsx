@@ -1,51 +1,61 @@
 
 import { Button } from '@/components/ui/button';
 import { useWallet } from '@/context/WalletContext';
-import { Plus, Send, ArrowUpDown, ExternalLink } from 'lucide-react';
+import { Plus, Send, ArrowUpDown, ExternalLink, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 
 const WalletScreen = () => {
-  const { tonBalance, cosmoBalance } = useWallet();
-
-  const transactions = [
-    { id: 1, type: 'Реинвест', amount: '-0.5 TON', date: '25.06.2024', status: 'completed' },
-    { id: 2, type: 'Заработано', amount: '+0.75 TON', date: '24.06.2024', status: 'completed' },
-    { id: 3, type: 'Пополнение', amount: '+2.0 TON', date: '23.06.2024', status: 'completed' },
-    { id: 4, type: 'Бонус', amount: '+25 COSMO', date: '23.06.2024', status: 'completed' },
-    { id: 5, type: 'Реферал', amount: '+50 COSMO', date: '22.06.2024', status: 'completed' },
-  ];
-
-  const nfts = [
-    { id: 1, name: 'Cosmo Crystal #1247', image: '🔮', rarity: 'Rare', price: '0.8 TON' },
-    { id: 2, name: 'Energy Particle #892', image: '⚡', rarity: 'Common', price: '0.3 TON' },
-  ];
+  const { tonBalance, tonPrice, walletAddress, disconnectWallet } = useWallet();
 
   const handleAction = (action: string) => {
-    toast.info(`${action} - скоро будет доступно`);
+    toast.info(`${action} - функция будет добавлена в следующем обновлении`);
+  };
+
+  const handleDisconnect = async () => {
+    try {
+      await disconnectWallet();
+      toast.success('Кошелек отключен');
+    } catch (error) {
+      toast.error('Ошибка отключения кошелька');
+    }
+  };
+
+  const formatAddress = (address: string | null) => {
+    if (!address) return 'Не подключен';
+    return `${address.slice(0, 6)}...${address.slice(-6)}`;
   };
 
   return (
     <div className="min-h-screen px-4 pt-4 pb-24 space-y-4">
       {/* Header */}
-      <div className="mb-4">
-        <h1 className="text-xl font-bold text-white mb-1">Кошелёк</h1>
-        <p className="text-gray-400 text-sm">
-          Управление активами и NFT коллекцией
-        </p>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h1 className="text-xl font-bold text-white mb-1">Кошелёк</h1>
+          <p className="text-gray-400 text-sm">
+            {formatAddress(walletAddress)}
+          </p>
+        </div>
+        <Button
+          onClick={handleDisconnect}
+          variant="ghost"
+          size="sm"
+          className="text-red-400 hover:text-red-300"
+        >
+          <LogOut className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Balance */}
       <div className="cosmic-card p-4">
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="text-center">
-            <div className="text-2xl mb-1">💎</div>
-            <div className="text-xl font-bold text-white">{tonBalance}</div>
-            <div className="text-sm text-gray-400">TON</div>
+        <div className="text-center mb-4">
+          <div className="text-3xl mb-2">💎</div>
+          <div className="text-3xl font-bold text-white mb-1">{tonBalance.toFixed(4)}</div>
+          <div className="text-sm text-gray-400 mb-2">TON</div>
+          <div className="text-lg text-neon-green font-semibold">
+            ${(tonBalance * tonPrice).toFixed(2)} USD
           </div>
-          <div className="text-center">
-            <div className="text-2xl mb-1">🌟</div>
-            <div className="text-xl font-bold text-neon-green">{cosmoBalance}</div>
-            <div className="text-sm text-gray-400">COSMO</div>
+          <div className="text-xs text-gray-400">
+            1 TON = ${tonPrice.toFixed(2)}
           </div>
         </div>
 
@@ -75,58 +85,36 @@ const WalletScreen = () => {
         </div>
       </div>
 
-      {/* NFT Collection */}
+      {/* Project Info */}
       <div className="cosmic-card p-4">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-white font-semibold text-base">NFT Коллекция</h3>
-          <Button variant="ghost" className="text-neon-green text-sm p-1">
-            <ExternalLink className="h-4 w-4 mr-1" />
-            Купить
-          </Button>
+          <h3 className="text-white font-semibold text-base">Информация о проекте</h3>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          {nfts.map((nft) => (
-            <div key={nft.id} className="bg-cosmic-gray rounded-lg p-3 border border-neon-green/20">
-              <div className="text-center">
-                <div className="text-2xl mb-2">{nft.image}</div>
-                <div className="text-sm font-medium text-white leading-tight mb-1">{nft.name}</div>
-                <div className="text-sm text-neon-green mb-1">{nft.rarity}</div>
-                <div className="text-sm text-gray-400">{nft.price}</div>
-              </div>
-            </div>
-          ))}
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Главный кошелек:</span>
+            <span className="text-neon-green text-sm font-mono">
+              {`UQBDN8...qyBi`}
+            </span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Сеть:</span>
+            <span className="text-white">TON Mainnet</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Комиссия сети:</span>
+            <span className="text-white">~0.01 TON</span>
+          </div>
         </div>
       </div>
 
-      {/* Transactions */}
+      {/* Security Notice */}
       <div className="cosmic-card p-4">
-        <h3 className="text-white font-semibold mb-3 text-base">История операций</h3>
-        <div className="space-y-2">
-          {transactions.map((tx) => (
-            <div key={tx.id} className="flex items-center justify-between p-3 bg-cosmic-gray rounded-lg">
-              <div className="flex items-center space-x-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
-                  tx.type === 'Заработано' || tx.type === 'Пополнение' || tx.type === 'Бонус' || tx.type === 'Реферал' 
-                    ? 'bg-green-500/20 text-green-400' 
-                    : 'bg-blue-500/20 text-blue-400'
-                }`}>
-                  {tx.type === 'Заработано' || tx.type === 'Пополнение' || tx.type === 'Бонус' || tx.type === 'Реферал' ? '↗' : '↙'}
-                </div>
-                <div>
-                  <div className="text-white font-medium text-sm">{tx.type}</div>
-                  <div className="text-gray-400 text-xs">{tx.date}</div>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className={`font-semibold text-sm ${
-                  tx.amount.startsWith('+') ? 'text-green-400' : 'text-blue-400'
-                }`}>
-                  {tx.amount}
-                </div>
-                <div className="text-xs text-green-400">✓</div>
-              </div>
-            </div>
-          ))}
+        <h3 className="text-white font-semibold mb-3 text-base">🔒 Безопасность</h3>
+        <div className="text-sm text-gray-300 space-y-2">
+          <p>• Все транзакции проходят через блокчейн TON</p>
+          <p>• Ваши приватные ключи не покидают ваш кошелек</p>
+          <p>• Смарт-контракты проверены и безопасны</p>
         </div>
       </div>
     </div>
