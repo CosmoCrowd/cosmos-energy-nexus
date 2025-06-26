@@ -13,15 +13,23 @@ class TonService {
   private listeners: ((wallet: any) => void)[] = [];
   private isInitialized = false;
   private initPromise: Promise<void> | null = null;
+  private isTestMode = true; // Включаем тестовый режим
 
   constructor() {
     this.initPromise = this.initTonConnect();
   }
 
   private async initTonConnect(): Promise<void> {
-    console.log('Инициализация реального TonConnect');
+    console.log('Инициализация TonConnect в тестовом режиме');
     
     try {
+      if (this.isTestMode) {
+        // В тестовом режиме сразу эмулируем подключенный кошелек
+        this.isInitialized = true;
+        this.notifyListeners(null);
+        return;
+      }
+
       // Ждем загрузки Telegram WebApp
       await this.waitForTelegram();
       console.log('Telegram WebApp загружен');
@@ -93,10 +101,30 @@ class TonService {
   }
 
   async connectWallet(): Promise<boolean> {
-    console.log('Подключение кошелька через TonConnect');
+    console.log('Подключение кошелька в тестовом режиме');
     
     if (!this.isInitialized) {
       await this.initPromise;
+    }
+
+    if (this.isTestMode) {
+      // Эмулируем успешное подключение кошелька
+      setTimeout(() => {
+        this.wallet = {
+          device: { appName: 'Test Wallet', platform: 'test' },
+          provider: 'test',
+          account: {
+            address: 'UQBtest123456789abcdefghijklmnopqrstuvwxyz',
+            network: '-239',
+            publicKey: 'test_public_key_123',
+            walletStateInit: 'test_state_init'
+          }
+        };
+        console.log('Тестовый кошелек подключен:', this.wallet);
+        this.notifyListeners(this.wallet);
+      }, 1000);
+      
+      return true;
     }
 
     if (!this.tonConnect) {
@@ -121,6 +149,13 @@ class TonService {
   }
 
   async disconnectWallet(): Promise<void> {
+    if (this.isTestMode) {
+      this.wallet = null;
+      this.notifyListeners(null);
+      console.log('Тестовый кошелек отключен');
+      return;
+    }
+
     if (this.tonConnect) {
       await this.tonConnect.disconnect();
     }
@@ -130,8 +165,13 @@ class TonService {
   }
 
   async getBalance(): Promise<number> {
-    if (!this.wallet || !this.tonConnect) {
+    if (!this.wallet) {
       return 0;
+    }
+
+    if (this.isTestMode) {
+      // Возвращаем тестовый баланс
+      return 15.75;
     }
 
     try {
@@ -165,7 +205,21 @@ class TonService {
   }
 
   async sendTransaction(amount: number, destinationAddress: string): Promise<boolean> {
-    if (!this.wallet || !this.tonConnect) {
+    if (!this.wallet) {
+      console.error('Кошелек не подключен');
+      return false;
+    }
+
+    if (this.isTestMode) {
+      console.log('Тестовая транзакция:', { amount, destinationAddress });
+      // Эмулируем успешную транзакцию
+      setTimeout(() => {
+        console.log('Тестовая транзакция завершена успешно');
+      }, 2000);
+      return true;
+    }
+
+    if (!this.tonConnect) {
       console.error('Кошелек не подключен');
       return false;
     }
@@ -233,6 +287,15 @@ class TonService {
       console.error('Невалидный адрес кошелька:', error);
       return false;
     }
+  }
+
+  // Методы для переключения режимов
+  enableTestMode() {
+    this.isTestMode = true;
+  }
+
+  disableTestMode() {
+    this.isTestMode = false;
   }
 }
 
