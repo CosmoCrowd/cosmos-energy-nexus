@@ -5,9 +5,32 @@ interface TelegramWalletTransaction {
   comment?: string;
 }
 
+// Extended interface for Telegram WebApp with additional properties
+interface ExtendedTelegramWebApp {
+  ready: () => void;
+  expand: () => void;
+  setHeaderColor: (color: string) => void;
+  setBackgroundColor: (color: string) => void;
+  close: () => void;
+  user?: {
+    id: number;
+    first_name: string;
+    last_name?: string;
+    username?: string;
+    language_code?: string;
+  };
+  initData?: string;
+  initDataUnsafe?: any;
+  MainButton?: any;
+  openInvoice?: (url: string, callback?: (status: string) => void) => void;
+  openTelegramLink?: (url: string) => void;
+  showPopup?: (params: { title: string; message: string; buttons: any[] }) => void;
+  platform?: string;
+}
+
 class TelegramWalletService {
   private isAvailable(): boolean {
-    return !!(window.Telegram?.WebApp?.openInvoice || window.Telegram?.WebApp?.openTelegramLink);
+    return !!(window.Telegram?.WebApp);
   }
 
   async requestPayment(transaction: TelegramWalletTransaction): Promise<boolean> {
@@ -20,14 +43,14 @@ class TelegramWalletService {
       console.log('Инициализация платежа через Telegram Wallet:', transaction);
 
       // Проверяем доступность Telegram WebApp
-      const tg = window.Telegram.WebApp;
+      const tg = window.Telegram.WebApp as ExtendedTelegramWebApp;
       
       if (tg.openInvoice) {
         // Метод 1: Использование встроенного счета
         const invoiceUrl = this.generateInvoiceUrl(transaction);
         
         return new Promise((resolve) => {
-          tg.openInvoice(invoiceUrl, (status: string) => {
+          tg.openInvoice!(invoiceUrl, (status: string) => {
             console.log('Статус платежа:', status);
             resolve(status === 'paid');
           });
@@ -89,7 +112,7 @@ class TelegramWalletService {
     hasOpenLink: boolean; 
     platform: string;
   } {
-    const tg = window.Telegram?.WebApp;
+    const tg = window.Telegram?.WebApp as ExtendedTelegramWebApp;
     
     return {
       isWebApp: !!tg,
@@ -101,7 +124,7 @@ class TelegramWalletService {
 
   // Показать уведомление пользователю
   showNotification(message: string, type: 'info' | 'success' | 'error' = 'info'): void {
-    const tg = window.Telegram?.WebApp;
+    const tg = window.Telegram?.WebApp as ExtendedTelegramWebApp;
     
     if (tg?.showPopup) {
       tg.showPopup({
