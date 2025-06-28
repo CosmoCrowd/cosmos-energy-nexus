@@ -179,5 +179,22 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		// Enhanced bottom navigation icons
+		function({ addUtilities }) {
+			addUtilities({
+				'.bottom-nav-icons': {
+					'& svg': {
+						'width': '2rem',
+						'height': '2rem',
+						'@media (min-width: 640px)': {
+							'width': '2.5rem',
+							'height': '2.5rem',
+						}
+					}
+				}
+			})
+		}
+	],
 } satisfies Config;

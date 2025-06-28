@@ -12,7 +12,7 @@ const DailyIncomeSection = () => {
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
-              <span className="text-white text-sm font-bold">Daily Passive Income from All Services:</span>
+              <span className="text-white text-sm font-bold">Ежедневный пассивный доход</span>
               <div className="relative">
                 <button
                   onMouseEnter={() => setShowTooltip(true)}
@@ -23,8 +23,8 @@ const DailyIncomeSection = () => {
                 </button>
                 
                 {showTooltip && (
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 p-2 bg-cosmic-dark border border-futuristic-primary/50 rounded-lg text-xs text-white max-w-xs z-10">
-                    Сумма подкачивается ежедневно из админ панели CosmoFund и зависит от прибыли всех проектов
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 p-3 bg-cosmic-dark border border-futuristic-primary/50 rounded-lg text-xs text-white max-w-xs z-10 shadow-lg">
+                    Сумма подкачивается ежедневно в 00:01 UTC из админ панели CosmoFund и зависит от суммарной прибыли всех проектов
                   </div>
                 )}
               </div>
