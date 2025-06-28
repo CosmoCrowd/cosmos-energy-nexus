@@ -137,7 +137,7 @@ const MainApp = () => {
                   <div className={`mb-2 transform transition-transform duration-300 ${
                     currentScreen === item.id ? 'animate-energy-pulse scale-110' : ''
                   }`}>
-                    <IconComponent size={22} />
+                    <IconComponent size={28} />
                   </div>
                   <span className="text-xs leading-tight truncate font-semibold">
                     {item.label}

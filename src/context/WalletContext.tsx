@@ -1,195 +1,131 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import TonWeb from 'tonweb';
+import TonConnect from '@tonconnect/sdk';
+import { getHttpEndpoint } from '@orbs-network/ton-access';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { tonService } from '@/services/tonService';
+const tonConnect = new TonConnect({ manifestUrl: 'https://raw.githubusercontent.com/Cosmo-Fund/tonconnect-manifest/main/tonconnect-manifest.json' });
 
 interface WalletContextType {
   isConnected: boolean;
-  isLoading: boolean;
+  walletAddress: string | null;
   tonBalance: number;
+  cosmoBalance: number;
   tonPrice: number;
   userLevel: number;
-  totalUsers: number;
-  walletAddress: string | null;
-  connectWallet: () => Promise<boolean>;
-  disconnectWallet: () => Promise<void>;
+  connectWallet: () => Promise<void>;
+  disconnectWallet: () => void;
   sendPayment: (amount: number) => Promise<boolean>;
   refreshBalance: () => Promise<void>;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
-const PROJECT_WALLET = 'UQBDN8ARRy-7qUYEmx9v6IxaMmcfHrbTrh6ZiFVQnzmsqyBi';
-
-export const WalletProvider = ({ children }: { children: ReactNode }) => {
+export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [tonBalance, setTonBalance] = useState(0);
-  const [tonPrice, setTonPrice] = useState(0);
-  const [userLevel, setUserLevel] = useState(0);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [totalUsers] = useState(12847);
+  const [tonBalance, setTonBalance] = useState(0);
+  const [cosmoBalance, setCosmoBalance] = useState(1500); // Mock cosmo balance
+  const [tonPrice, setTonPrice] = useState(2.5); // Mock TON price
+  const [userLevel, setUserLevel] = useState(1);
 
   useEffect(() => {
-    console.log('Инициализация WalletProvider с реальным TON Connect');
-    
-    let loadingTimeout: NodeJS.Timeout;
-    
-    // Подписка на изменения кошелька
-    tonService.onWalletChange((wallet: any) => {
-      console.log('Получено изменение кошелька:', wallet);
-      
-      const connected = !!wallet;
-      setIsConnected(connected);
-      setWalletAddress(wallet?.account?.address || null);
-      
-      // Валидируем адрес кошелька если он есть
-      if (wallet?.account?.address) {
-        const isValid = tonService.validateWalletAddress(wallet.account.address);
-        if (!isValid) {
-          console.warn('Получен невалидный адрес кошелька');
-        }
-      }
-      
-      // Убираем загрузку через 2 секунды максимум
-      if (loadingTimeout) clearTimeout(loadingTimeout);
-      loadingTimeout = setTimeout(() => {
-        setIsLoading(false);
-      }, 1500);
-      
-      if (connected) {
-        loadWalletData();
-      } else {
-        setTonBalance(0);
-        setUserLevel(0);
+    tonConnect.restoreConnection().then((wallet) => {
+      if (wallet) {
+        setIsConnected(true);
+        setWalletAddress(wallet.account.address);
+        refreshBalance();
       }
     });
-
-    // Загружаем курс TON
-    loadTonPrice();
-    
-    // Обновляем курс каждые 5 минут
-    const priceInterval = setInterval(loadTonPrice, 5 * 60 * 1000);
-    
-    // Убираем загрузку через 3 секунды в любом случае
-    const maxLoadingTimeout = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-    
-    return () => {
-      clearInterval(priceInterval);
-      if (loadingTimeout) clearTimeout(loadingTimeout);
-      clearTimeout(maxLoadingTimeout);
-    };
   }, []);
 
-  const loadWalletData = async () => {
+  const connectWallet = async () => {
     try {
-      console.log('Загружаем данные реального кошелька...');
-      const balance = await tonService.getBalance();
-      setTonBalance(balance);
-      
-      // Определяем уровень пользователя на основе реального баланса
-      if (balance >= 256) setUserLevel(10);
-      else if (balance >= 128) setUserLevel(9);
-      else if (balance >= 64) setUserLevel(8);
-      else if (balance >= 32) setUserLevel(7);
-      else if (balance >= 16) setUserLevel(6);
-      else if (balance >= 8) setUserLevel(5);
-      else if (balance >= 4) setUserLevel(4);
-      else if (balance >= 2) setUserLevel(3);
-      else if (balance >= 1) setUserLevel(2);
-      else if (balance >= 0.5) setUserLevel(1);
-      else setUserLevel(0);
-      
-      console.log('Данные кошелька загружены:', { balance, userLevel });
-    } catch (error) {
-      console.error('Ошибка загрузки данных кошелька:', error);
-    }
-  };
-
-  const loadTonPrice = async () => {
-    try {
-      const price = await tonService.getTonPrice();
-      setTonPrice(price);
-    } catch (error) {
-      console.error('Ошибка загрузки курса TON:', error);
-      setTonPrice(5.50);
-    }
-  };
-
-  const connectWallet = async (): Promise<boolean> => {
-    try {
-      console.log('Подключение к реальному кошельку TON...');
-      const success = await tonService.connectWallet();
-      
-      if (success) {
-        console.log('Кошелек успешно подключен');
-      } else {
-        console.error('Не удалось подключить кошелек');
+      const wallet = await tonConnect.connect({
+        onSessionExpire: () => {
+          disconnectWallet();
+        },
+      });
+      if (wallet) {
+        setIsConnected(true);
+        setWalletAddress(wallet.account.address);
+        await refreshBalance();
       }
-      
-      return success;
-    } catch (error) {
-      console.error('Ошибка подключения кошелька:', error);
-      return false;
+    } catch (e) {
+      console.error('Connection error:', e);
     }
   };
 
-  const disconnectWallet = async (): Promise<void> => {
-    try {
-      await tonService.disconnectWallet();
-      console.log('Кошелек отключен');
-    } catch (error) {
-      console.error('Ошибка отключения кошелька:', error);
-    }
+  const disconnectWallet = () => {
+    tonConnect.disconnect();
+    setIsConnected(false);
+    setWalletAddress(null);
   };
 
   const sendPayment = async (amount: number): Promise<boolean> => {
+    if (!walletAddress) {
+      console.error('Wallet not connected');
+      return false;
+    }
+
     try {
-      console.log('Отправка реального платежа:', amount, 'TON');
-      
-      // Валидируем адрес получателя
-      if (!tonService.validateWalletAddress(PROJECT_WALLET)) {
-        console.error('Невалидный адрес получателя');
-        return false;
-      }
-      
-      const success = await tonService.sendTransaction(amount, PROJECT_WALLET);
-      
-      if (success) {
-        console.log('Платеж успешно отправлен');
-        // Обновляем баланс через 3 секунды для учета транзакции
-        setTimeout(loadWalletData, 3000);
-      } else {
-        console.error('Ошибка отправки платежа');
-      }
-      
-      return success;
+      const endpoint = await getHttpEndpoint();
+      const tonweb = new TonWeb(new TonWeb.HttpProvider(endpoint));
+
+      const transfer = {
+        to: 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9', // Replace with your contract address
+        value: TonWeb.utils.toNano(amount.toString()).toString(),
+        stateInit: null,
+        payload: null,
+      };
+
+      const result = await tonConnect.sendTransaction({
+        messages: [transfer],
+        validUntil: Date.now() + 5 * 60 * 1000, // 5 minutes
+        network: 'testnet',
+      });
+
+      console.log('Payment result:', result);
+      await refreshBalance();
+      return true;
     } catch (error) {
-      console.error('Ошибка отправки платежа:', error);
+      console.error('Payment error:', error);
       return false;
     }
   };
 
-  const refreshBalance = async (): Promise<void> => {
-    console.log('Обновление баланса...');
-    await loadWalletData();
+  const refreshBalance = async () => {
+    if (!walletAddress) return;
+
+    try {
+      const endpoint = await getHttpEndpoint();
+      const tonweb = new TonWeb(new TonWeb.HttpProvider(endpoint));
+      const wallet = tonweb.wallet.create({ address: walletAddress, publicKey: 'test' }); // Public key is not required to get balance
+      const balance = await wallet.getBalance();
+      setTonBalance(TonWeb.utils.fromNano(balance));
+    } catch (error) {
+      console.error('Error refreshing balance:', error);
+    }
+  };
+
+  useEffect(() => {
+    refreshBalance();
+  }, [walletAddress]);
+
+  const value: WalletContextType = {
+    isConnected,
+    walletAddress,
+    tonBalance,
+    cosmoBalance,
+    tonPrice,
+    userLevel,
+    connectWallet,
+    disconnectWallet,
+    sendPayment,
+    refreshBalance,
   };
 
   return (
-    <WalletContext.Provider value={{
-      isConnected,
-      isLoading,
-      tonBalance,
-      tonPrice,
-      userLevel,
-      totalUsers,
-      walletAddress,
-      connectWallet,
-      disconnectWallet,
-      sendPayment,
-      refreshBalance
-    }}>
+    <WalletContext.Provider value={value}>
       {children}
     </WalletContext.Provider>
   );
