@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -152,6 +151,11 @@ export default {
 						transform: 'scale(1.05)',
 						filter: 'brightness(1.2) saturate(1.5)'
 					}
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0px) translateX(0px)' },
+					'33%': { transform: 'translateY(-10px) translateX(5px)' },
+					'66%': { transform: 'translateY(-5px) translateX(-5px)' }
 				}
 			},
 			animation: {
@@ -164,7 +168,8 @@ export default {
 				'futuristic-glow': 'futuristic-glow 3s ease-in-out infinite',
 				'hologram-flicker': 'hologram-flicker 2s ease-in-out infinite',
 				'matrix-rain': 'matrix-rain 4s linear infinite',
-				'energy-pulse': 'energy-pulse 2s ease-in-out infinite'
+				'energy-pulse': 'energy-pulse 2s ease-in-out infinite',
+				'float': 'float 3s ease-in-out infinite'
 			},
 			backgroundImage: {
 				'cosmic-gradient': 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%)',
