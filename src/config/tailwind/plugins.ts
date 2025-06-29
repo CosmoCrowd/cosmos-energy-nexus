@@ -5,15 +5,15 @@ export const customPlugins = [
     addUtilities({
       '.bottom-nav-icons': {
         '& svg': {
-          'width': '2.5rem',
-          'height': '2.5rem',
+          'width': '3.5rem',
+          'height': '3.5rem',
           '@media (min-width: 640px)': {
-            'width': '3rem',
-            'height': '3rem',
+            'width': '4rem',
+            'height': '4rem',
           },
           '@media (min-width: 768px)': {
-            'width': '3.5rem',
-            'height': '3.5rem',
+            'width': '4.5rem',
+            'height': '4.5rem',
           }
         }
       }
