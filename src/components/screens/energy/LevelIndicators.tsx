@@ -22,7 +22,7 @@ const LevelIndicators = ({ onLevelPurchase }: LevelIndicatorsProps) => {
           className={`relative w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-300 ${
             level <= userLevel
               ? 'bg-gradient-to-br from-futuristic-primary to-futuristic-secondary text-black shadow-lg shadow-futuristic-primary/50 animate-energy-pulse'
-              : 'bg-gray-700 text-gray-400 border border-gray-600 cursor-pointer hover:border-futuristic-primary/50 hover:bg-gray-600'
+              : 'bg-gray-700 text-gray-400 border border-gray-600 cursor-pointer hover:border-futuristic-primary/50 hover:bg-gray-600 hover:scale-110'
           }`}
           onClick={() => handleLockClick(level)}
         >

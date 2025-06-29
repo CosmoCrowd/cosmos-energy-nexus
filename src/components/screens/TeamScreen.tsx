@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight, Users } from 'lucide-react';
+import ActivityMatrix from './energy/ActivityMatrix';
 
 const TeamScreen = () => {
   const [expandedNodes, setExpandedNodes] = useState<number[]>([1]);
@@ -118,38 +119,8 @@ const TeamScreen = () => {
         </div>
       </div>
 
-      {/* Matrix Visualization */}
-      <div className="cosmic-card p-4">
-        <h3 className="text-white font-semibold mb-4 text-base">Матрица активности</h3>
-        <div className="text-center mb-4">
-          <div className="inline-block p-4 bg-neon-green/10 border border-neon-green/30 rounded-full">
-            <span className="text-3xl">{teamStructure.user.avatar}</span>
-          </div>
-        </div>
-        
-        {/* Matrix levels visualization */}
-        <div className="space-y-6">
-          {[1, 2, 3].map((level) => (
-            <div key={level} className="text-center">
-              <div className="text-gray-400 text-sm mb-3">Уровень {level}</div>
-              <div className="flex justify-center space-x-3">
-                {Array.from({ length: Math.pow(2, level) }, (_, i) => (
-                  <div
-                    key={i}
-                    className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-base ${
-                      Math.random() > 0.3 
-                        ? 'bg-neon-green/20 border-neon-green text-neon-green' 
-                        : 'bg-gray-800 border-gray-600 text-gray-500'
-                    }`}
-                  >
-                    {Math.random() > 0.3 ? '👤' : '⭕'}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Improved Activity Matrix */}
+      <ActivityMatrix />
     </div>
   );
 };
