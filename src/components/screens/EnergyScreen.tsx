@@ -1,10 +1,8 @@
-
 import { useState } from 'react';
 import EnergyHeader from './energy/EnergyHeader';
 import ReferralSection from './energy/ReferralSection';
 import LevelIndicators from './energy/LevelIndicators';
 import EnergyVisualization from './energy/EnergyVisualization';
-import DailyIncomeSection from './energy/DailyIncomeSection';
 import EnergyMatrix from './energy/EnergyMatrix';
 import PurchaseModal from './energy/PurchaseModal';
 
@@ -43,9 +41,6 @@ const EnergyScreen = () => {
         <ReferralSection />
         <LevelIndicators onLevelPurchase={handleLevelPurchase} />
         <EnergyVisualization />
-        
-        {/* Daily Income Section moved to bottom */}
-        <DailyIncomeSection />
         
         {/* Keep the original matrix for purchasing levels */}
         <div className="opacity-0 pointer-events-none absolute">
