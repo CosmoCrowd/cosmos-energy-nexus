@@ -127,7 +127,7 @@ const MainApp = () => {
                   key={item.id}
                   variant="ghost"
                   onClick={() => setCurrentScreen(item.id as Screen)}
-                  className={`flex flex-col items-center py-3 px-3 rounded-2xl text-sm transition-all duration-500 min-w-0 flex-1 transform hover:scale-110 ${
+                  className={`flex flex-col items-center py-3 px-3 rounded-2xl text-sm transition-all duration-500 min-w-0 flex-1 transform hover:scale-110 bottom-nav-icons ${
                     currentScreen === item.id
                       ? 'bg-futuristic-primary/20 text-futuristic-primary border border-futuristic-primary/50 shadow-lg shadow-futuristic-primary/30 animate-futuristic-glow'
                       : 'text-gray-400 hover:text-futuristic-primary hover:bg-futuristic-primary/10'

@@ -44,7 +44,7 @@ const EnergyScreen = () => {
         <LevelIndicators onLevelPurchase={handleLevelPurchase} />
         <EnergyVisualization />
         
-        {/* Moved Daily Income Section to bottom */}
+        {/* Daily Income Section moved to bottom */}
         <DailyIncomeSection />
         
         {/* Keep the original matrix for purchasing levels */}
