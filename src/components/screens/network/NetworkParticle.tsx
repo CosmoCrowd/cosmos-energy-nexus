@@ -4,89 +4,80 @@ import { useState } from 'react';
 interface NetworkParticleProps {
   emoji: string;
   isActive: boolean;
-  size: 'small' | 'large';
+  size: 'large' | 'small';
   onClick: () => void;
   participant?: {
     id: number;
     name: string;
     avatar: string;
-    position: string;
   };
   isNavigator?: boolean;
 }
 
-const NetworkParticle = ({ 
-  emoji, 
-  isActive, 
-  size, 
-  onClick, 
-  participant,
-  isNavigator = false 
-}: NetworkParticleProps) => {
+const NetworkParticle = ({ emoji, isActive, size, onClick, participant, isNavigator }: NetworkParticleProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  
-  const sizeClasses = {
-    small: 'w-12 h-12 text-2xl',
-    large: 'w-16 h-16 text-3xl'
-  };
 
-  const getParticleStyle = () => {
-    if (isNavigator) {
-      return 'bg-gradient-to-br from-yellow-400 to-orange-500 border-yellow-400 shadow-yellow-400/50 animate-futuristic-glow';
+  const sizeClasses = size === 'large' ? 'w-16 h-16 text-2xl' : 'w-12 h-12 text-lg';
+  
+  const baseClasses = `
+    ${sizeClasses}
+    rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 transform relative
+    ${isActive 
+      ? 'bg-gradient-to-br from-futuristic-primary/40 to-futuristic-accent/40 border-2 border-futuristic-primary shadow-lg shadow-futuristic-primary/50 animate-energy-pulse hover:scale-110' 
+      : 'bg-cosmic-gray/50 border-2 border-gray-600 hover:border-futuristic-primary/50 hover:bg-cosmic-gray/70 hover:scale-105'
     }
-    
-    if (participant) {
-      return 'bg-gradient-to-br from-futuristic-primary to-futuristic-secondary border-futuristic-primary shadow-futuristic-primary/50';
-    }
-    
-    if (isActive) {
-      return 'bg-gradient-to-br from-futuristic-primary/30 to-futuristic-secondary/30 border-futuristic-primary/50 hover:border-futuristic-primary hover:shadow-futuristic-primary/30';
-    }
-    
-    return 'bg-cosmic-gray/30 border-gray-600 opacity-50';
-  };
+    ${isNavigator ? 'ring-4 ring-yellow-400/50 animate-futuristic-glow' : ''}
+  `;
 
   return (
     <div className="relative">
-      <button
+      <div
+        className={baseClasses}
         onClick={onClick}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`
-          ${sizeClasses[size]} 
-          rounded-full border-2 flex items-center justify-center
-          transition-all duration-300 transform hover:scale-110 cursor-pointer
-          ${getParticleStyle()}
-        `}
-        disabled={!isActive && !participant}
       >
-        {/* Particle glow effect */}
-        {(isActive || participant || isNavigator) && (
-          <div className="absolute -inset-1 rounded-full border border-futuristic-primary/30 animate-ping opacity-75"></div>
+        {/* Particle effect for active particles */}
+        {isActive && (
+          <>
+            <div className="absolute -inset-4 pointer-events-none">
+              {[...Array(8)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-1 h-1 bg-futuristic-primary rounded-full animate-matrix-rain opacity-60"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    animationDuration: `${1.5 + Math.random() * 2}s`,
+                    animationDelay: `${Math.random() * 2}s`
+                  }}
+                />
+              ))}
+            </div>
+          </>
         )}
         
-        {/* Emoji/Avatar */}
-        <span className={`${isNavigator ? 'animate-energy-pulse' : ''}`}>
+        {/* Main emoji */}
+        <span className={`${isActive ? 'animate-pulse' : ''} relative z-10`}>
           {emoji}
         </span>
         
-        {/* Empty slot indicator */}
-        {!participant && !isNavigator && (
-          <div className="absolute inset-0 rounded-full border-2 border-dashed border-gray-600 opacity-50"></div>
+        {/* Glow effect */}
+        {isActive && (
+          <div className="absolute inset-0 bg-futuristic-primary/20 rounded-full animate-ping"></div>
         )}
-      </button>
+      </div>
       
       {/* Hover tooltip */}
       {isHovered && participant && (
-        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-cosmic-dark border border-futuristic-primary/50 rounded-lg px-3 py-1 text-xs text-white z-20 shadow-lg">
+        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-cosmic-dark border border-futuristic-primary/50 rounded-lg px-2 py-1 text-xs text-white whitespace-nowrap z-50">
           {participant.name}
         </div>
       )}
       
-      {isHovered && !participant && !isNavigator && isActive && (
-        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-cosmic-dark border border-futuristic-primary/50 rounded-lg px-3 py-1 text-xs text-white z-20 shadow-lg">
-          Свободное место
-        </div>
+      {/* Connection lines for active particles */}
+      {isActive && !isNavigator && (
+        <div className="absolute top-1/2 left-1/2 w-px h-8 bg-gradient-to-b from-futuristic-primary/50 to-transparent -translate-x-1/2 -translate-y-full"></div>
       )}
     </div>
   );

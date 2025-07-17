@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Clock, ExternalLink } from 'lucide-react';
+import { CheckCircle, Clock, Star, Gift, ExternalLink, Award } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Task {
@@ -9,190 +9,319 @@ interface Task {
   title: string;
   description: string;
   reward: number;
-  type: 'telegram' | 'social' | 'referral';
+  type: 'social' | 'invite' | 'game' | 'daily';
+  status: 'available' | 'completed' | 'claimed';
   icon: string;
-  completed: boolean;
-  link?: string;
+  url?: string;
+  progress?: number;
+  maxProgress?: number;
 }
 
 const TasksScreen = () => {
   const [tasks, setTasks] = useState<Task[]>([
     {
       id: 1,
-      title: 'Подпишись на канал Cosmo',
-      description: 'Подпишитесь на наш официальный канал в Telegram',
-      reward: 25,
-      type: 'telegram',
+      title: 'Подпишись на Telegram канал',
+      description: 'Следи за новостями проекта',
+      reward: 0.5,
+      type: 'social',
+      status: 'available',
       icon: '📢',
-      completed: false,
-      link: 'https://t.me/cosmo_channel'
+      url: 'https://t.me/cosmosphere_official'
     },
     {
       id: 2,
-      title: 'Вступи в группу обсуждений',
-      description: 'Присоединяйтесь к нашему сообществу',
-      reward: 25,
-      type: 'telegram',
+      title: 'Присоединись к чату',
+      description: 'Общайся с сообществом',
+      reward: 0.3,
+      type: 'social',
+      status: 'available',
       icon: '💬',
-      completed: false,
-      link: 'https://t.me/cosmo_chat'
+      url: 'https://t.me/cosmosphere_chat'
     },
     {
       id: 3,
-      title: 'Пригласи 3 друзей',
-      description: 'Пригласите троих друзей по реферальной ссылке',
-      reward: 100,
-      type: 'referral',
-      icon: '👥',
-      completed: false
+      title: 'Подпишись на Twitter',
+      description: 'Не пропускай важные обновления',
+      reward: 0.4,
+      type: 'social',
+      status: 'completed',
+      icon: '🐦',
+      url: 'https://twitter.com/cosmosphere'
     },
     {
       id: 4,
-      title: 'Купи первую энергию',
-      description: 'Приобретите "Энергию Начала" для активации',
-      reward: 50,
-      type: 'referral',
-      icon: '⚡',
-      completed: true
+      title: 'Пригласи 5 друзей',
+      description: 'Расширь космическую сеть',
+      reward: 2.5,
+      type: 'invite',
+      status: 'available',
+      icon: '👥',
+      progress: 2,
+      maxProgress: 5
     },
     {
       id: 5,
-      title: 'Поделись в соцсетях',
-      description: 'Поделитесь информацией о Cosmo в любой соцсети',
-      reward: 25,
+      title: 'Активируй уровень 3',
+      description: 'Достигни 3 уровня в матрице',
+      reward: 1.0,
+      type: 'game',
+      status: 'available',
+      icon: '🚀'
+    },
+    {
+      id: 6,
+      title: 'Ежедневный вход',
+      description: 'Заходи каждый день',
+      reward: 0.1,
+      type: 'daily',
+      status: 'claimed',
+      icon: '📅'
+    },
+    {
+      id: 7,
+      title: 'Поделись в Stories',
+      description: 'Расскажи друзьям о проекте',
+      reward: 0.8,
       type: 'social',
-      icon: '📱',
-      completed: false
+      status: 'available',
+      icon: '📱'
+    },
+    {
+      id: 8,
+      title: 'Пригласи 10 друзей',
+      description: 'Стань космическим лидером',
+      reward: 5.0,
+      type: 'invite',
+      status: 'available',
+      icon: '🌟',
+      progress: 2,
+      maxProgress: 10
     }
   ]);
 
-  const [completedToday] = useState(2);
-  const [totalEarned] = useState(75);
+  const [activeTab, setActiveTab] = useState<'all' | 'social' | 'invite' | 'game' | 'daily'>('all');
 
-  const handleTaskComplete = (taskId: number) => {
+  const handleTaskAction = (taskId: number) => {
     const task = tasks.find(t => t.id === taskId);
-    if (!task || task.completed) return;
+    if (!task) return;
 
-    if (task.link) {
-      window.open(task.link, '_blank');
-    }
-
-    // Simulate task completion after a delay
-    setTimeout(() => {
+    if (task.status === 'available') {
+      if (task.url) {
+        window.open(task.url, '_blank');
+        // Simulate task completion check
+        setTimeout(() => {
+          setTasks(prev => prev.map(t => 
+            t.id === taskId ? { ...t, status: 'completed' } : t
+          ));
+          toast.success('Задание выполнено! Можете забрать награду');
+        }, 3000);
+      } else {
+        // For non-URL tasks, mark as completed immediately
+        setTasks(prev => prev.map(t => 
+          t.id === taskId ? { ...t, status: 'completed' } : t
+        ));
+        toast.success('Задание выполнено!');
+      }
+    } else if (task.status === 'completed') {
+      // Claim reward
       setTasks(prev => prev.map(t => 
-        t.id === taskId ? { ...t, completed: true } : t
+        t.id === taskId ? { ...t, status: 'claimed' } : t
       ));
-      toast.success(`Задание выполнено! +${task.reward} COSMO`);
-    }, 2000);
-  };
-
-  const getTaskTypeColor = (type: Task['type']) => {
-    switch (type) {
-      case 'telegram': return 'text-blue-400 border-blue-400/30 bg-blue-400/10';
-      case 'social': return 'text-purple-400 border-purple-400/30 bg-purple-400/10';
-      case 'referral': return 'text-neon-green border-neon-green/30 bg-neon-green/10';
-      default: return 'text-gray-400 border-gray-400/30 bg-gray-400/10';
+      toast.success(`Получено ${task.reward} TON!`);
     }
   };
 
-  const completableTasks = tasks.filter(t => !t.completed);
-  const completedTasks = tasks.filter(t => t.completed);
+  const getFilteredTasks = () => {
+    if (activeTab === 'all') return tasks;
+    return tasks.filter(task => task.type === activeTab);
+  };
+
+  const getTaskStats = () => {
+    const completed = tasks.filter(t => t.status === 'claimed').length;
+    const totalRewards = tasks.filter(t => t.status === 'claimed').reduce((sum, t) => sum + t.reward, 0);
+    return { completed, total: tasks.length, totalRewards };
+  };
+
+  const stats = getTaskStats();
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed': return <CheckCircle className="text-green-400" size={20} />;
+      case 'claimed': return <Award className="text-yellow-400" size={20} />;
+      default: return <Clock className="text-gray-400" size={20} />;
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'completed': return 'Забрать';
+      case 'claimed': return 'Выполнено';
+      default: return 'Выполнить';
+    }
+  };
+
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'social': return 'Соцсети';
+      case 'invite': return 'Рефералы';
+      case 'game': return 'Игра';
+      case 'daily': return 'Ежедневные';
+      default: return 'Все';
+    }
+  };
 
   return (
-    <div className="min-h-screen p-4 pb-24">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white mb-2">Задания</h1>
-        <p className="text-gray-400 text-sm">
-          Выполняйте задания и получайте COSMO токены
-        </p>
+    <div className="min-h-screen px-3 pt-2 pb-20 space-y-4 relative">
+      {/* Animated Background */}
+      <div className="fixed inset-0 pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-px h-px bg-yellow-400 rounded-full animate-matrix-rain opacity-20"
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDuration: `${3 + Math.random() * 4}s`,
+              animationDelay: `${Math.random() * 4}s`
+            }}
+          />
+        ))}
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="cosmic-card rounded-xl p-4 text-center">
-          <div className="text-2xl mb-2">✅</div>
-          <div className="text-xl font-bold text-neon-green">{completedToday}</div>
-          <div className="text-sm text-gray-400">Выполнено сегодня</div>
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="bg-gradient-to-br from-cosmic-dark/90 via-yellow-900/20 to-orange-900/20 rounded-3xl p-5 border border-yellow-400/30 backdrop-blur-xl animate-fade-in-up">
+          <div className="text-center mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 animate-energy-pulse">
+              <Star className="text-black" size={28} />
+            </div>
+            <h2 className="text-white font-bold text-xl mb-2">Космические Задания</h2>
+            <p className="text-gray-300 text-sm">Выполняй задания и получай награды</p>
+          </div>
         </div>
-        <div className="cosmic-card rounded-xl p-4 text-center">
-          <div className="text-2xl mb-2">🌟</div>
-          <div className="text-xl font-bold text-neon-blue">{totalEarned}</div>
-          <div className="text-sm text-gray-400">COSMO заработано</div>
-        </div>
-      </div>
 
-      {/* Available Tasks */}
-      {completableTasks.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-white font-semibold mb-4">Доступные задания</h3>
-          <div className="space-y-3">
-            {completableTasks.map((task) => (
-              <div key={task.id} className="cosmic-card rounded-xl p-4">
-                <div className="flex items-start space-x-4">
-                  <div className={`w-12 h-12 rounded-lg border flex items-center justify-center ${getTaskTypeColor(task.type)}`}>
-                    <span className="text-xl">{task.icon}</span>
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-3 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+          <div className="bg-gradient-to-br from-cosmic-dark/90 via-green-900/20 to-emerald-900/20 rounded-2xl p-3 border border-green-400/30 backdrop-blur-xl text-center">
+            <div className="text-green-400 font-bold text-lg">{stats.completed}</div>
+            <div className="text-gray-400 text-xs">Выполнено</div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-cosmic-dark/90 via-blue-900/20 to-cyan-900/20 rounded-2xl p-3 border border-cyan-400/30 backdrop-blur-xl text-center">
+            <div className="text-cyan-400 font-bold text-lg">{stats.total}</div>
+            <div className="text-gray-400 text-xs">Всего</div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-cosmic-dark/90 via-yellow-900/20 to-orange-900/20 rounded-2xl p-3 border border-yellow-400/30 backdrop-blur-xl text-center">
+            <div className="text-yellow-400 font-bold text-lg font-mono">{stats.totalRewards.toFixed(1)}</div>
+            <div className="text-gray-400 text-xs">TON</div>
+          </div>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="bg-cosmic-gray/30 rounded-2xl p-1 animate-fade-in-up overflow-x-auto" style={{animationDelay: '0.2s'}}>
+          <div className="flex space-x-1 min-w-max">
+            {(['all', 'social', 'invite', 'game', 'daily'] as const).map((tab) => (
+              <Button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 rounded-xl text-sm transition-all whitespace-nowrap ${
+                  activeTab === tab
+                    ? 'bg-yellow-400 text-black font-bold'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                {getTypeLabel(tab)}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tasks List */}
+        <div className="space-y-3 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+          {getFilteredTasks().map((task) => (
+            <div 
+              key={task.id} 
+              className="bg-gradient-to-br from-cosmic-dark/90 via-futuristic-primary/5 to-futuristic-accent/5 rounded-3xl p-4 border border-futuristic-primary/30 backdrop-blur-xl"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3 flex-1">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400/30 to-orange-600/30 flex items-center justify-center border border-yellow-400/50">
+                    <span className="text-lg">{task.icon}</span>
                   </div>
+                  
                   <div className="flex-1">
-                    <h4 className="text-white font-medium mb-1">{task.title}</h4>
-                    <p className="text-gray-400 text-sm mb-3">{task.description}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-neon-green font-bold">+{task.reward}</span>
-                        <span className="text-gray-400 text-sm">COSMO</span>
+                    <div className="text-white font-medium text-sm">{task.title}</div>
+                    <div className="text-gray-400 text-xs mt-1">{task.description}</div>
+                    
+                    {task.progress !== undefined && task.maxProgress && (
+                      <div className="mt-2">
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-gray-400">Прогресс</span>
+                          <span className="text-futuristic-primary">{task.progress}/{task.maxProgress}</span>
+                        </div>
+                        <div className="w-full bg-cosmic-gray/50 rounded-full h-1.5">
+                          <div 
+                            className="bg-gradient-to-r from-futuristic-primary to-futuristic-accent h-1.5 rounded-full transition-all duration-300"
+                            style={{ width: `${(task.progress / task.maxProgress) * 100}%` }}
+                          ></div>
+                        </div>
                       </div>
-                      <Button
-                        onClick={() => handleTaskComplete(task.id)}
-                        className="cosmic-button text-black font-semibold px-4 py-2"
-                      >
-                        {task.link ? (
-                          <>
-                            Перейти <ExternalLink className="h-4 w-4 ml-1" />
-                          </>
-                        ) : (
-                          'Выполнить'
-                        )}
-                      </Button>
+                    )}
+                    
+                    <div className="flex items-center space-x-2 mt-2">
+                      <Gift className="text-yellow-400" size={14} />
+                      <span className="text-yellow-400 font-mono font-bold text-sm">{task.reward} TON</span>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Completed Tasks */}
-      {completedTasks.length > 0 && (
-        <div>
-          <h3 className="text-white font-semibold mb-4">Выполненные задания</h3>
-          <div className="space-y-3">
-            {completedTasks.map((task) => (
-              <div key={task.id} className="cosmic-card rounded-xl p-4 opacity-75">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 rounded-lg border border-green-400/30 bg-green-400/10 flex items-center justify-center">
-                    <CheckCircle className="h-6 w-6 text-green-400" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-white font-medium mb-1">{task.title}</h4>
-                    <p className="text-gray-400 text-sm mb-3">{task.description}</p>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-green-400 font-bold">+{task.reward}</span>
-                      <span className="text-gray-400 text-sm">COSMO</span>
-                      <span className="text-green-400 text-sm">✓ Выполнено</span>
-                    </div>
-                  </div>
+                
+                <div className="flex items-center space-x-2">
+                  {getStatusIcon(task.status)}
+                  <Button
+                    onClick={() => handleTaskAction(task.id)}
+                    disabled={task.status === 'claimed'}
+                    className={`px-4 py-2 text-sm rounded-xl transition-all ${
+                      task.status === 'claimed'
+                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                        : task.status === 'completed'
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:scale-105'
+                        : 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold hover:scale-105'
+                    }`}
+                  >
+                    {task.url && task.status === 'available' && (
+                      <ExternalLink size={14} className="mr-1" />
+                    )}
+                    {getStatusText(task.status)}
+                  </Button>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      )}
 
-      {/* Daily Reset Timer */}
-      <div className="cosmic-card rounded-xl p-4 mt-6">
-        <div className="flex items-center justify-center space-x-2 text-gray-400">
-          <Clock className="h-4 w-4" />
-          <span className="text-sm">Новые задания через: 18:42:15</span>
+        {/* Daily Bonus */}
+        <div className="bg-gradient-to-br from-cosmic-dark/90 via-purple-900/20 to-pink-900/20 rounded-3xl p-5 border border-purple-400/30 backdrop-blur-xl animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+          <div className="text-center">
+            <div className="text-3xl mb-2">🎁</div>
+            <h3 className="text-white font-bold mb-2">Ежедневный бонус</h3>
+            <p className="text-gray-300 text-sm mb-4">Заходи каждый день и получай увеличивающиеся награды</p>
+            
+            <div className="grid grid-cols-7 gap-2 mb-4">
+              {[0.1, 0.2, 0.3, 0.5, 0.8, 1.0, 2.0].map((reward, index) => (
+                <div key={index} className={`p-2 rounded-lg text-xs font-bold ${
+                  index === 0 ? 'bg-futuristic-primary text-black' : 'bg-cosmic-gray/50 text-gray-400'
+                }`}>
+                  День {index + 1}
+                  <div className="text-xs font-mono">{reward} TON</div>
+                </div>
+              ))}
+            </div>
+            
+            <Button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold hover:scale-105 transition-transform">
+              Забрать бонус за День 1
+            </Button>
+          </div>
         </div>
       </div>
     </div>

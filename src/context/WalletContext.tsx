@@ -24,21 +24,22 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [tonBalance, setTonBalance] = useState(0);
-  const [cosmoBalance, setCosmoBalance] = useState(1500); // Mock cosmo balance
-  const [tonPrice, setTonPrice] = useState(2.5); // Mock TON price
-  const [userLevel, setUserLevel] = useState(1);
+  const [tonBalance, setTonBalance] = useState(15.75);
+  const [cosmoBalance, setCosmoBalance] = useState(2450); // Increased COSMO balance
+  const [tonPrice, setTonPrice] = useState(2.5);
+  const [userLevel, setUserLevel] = useState(3); // Set to level 3 to show some progress
 
   useEffect(() => {
     const initWallet = async () => {
       try {
         console.log('Initializing wallet connection...');
         
-        // For now, simulate test mode connection
+        // Simulate connection with more realistic data
         setTimeout(() => {
           setIsConnected(true);
           setWalletAddress('UQBtest123456789abcdefghijklmnopqrstuvwxyz');
           setTonBalance(15.75);
+          setCosmoBalance(2450);
           setIsLoading(false);
           console.log('Test wallet connected successfully');
         }, 1000);
@@ -56,11 +57,12 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     try {
       console.log('Connecting wallet...');
       
-      // Simulate successful connection for now
+      // Simulate successful connection
       setTimeout(() => {
         setIsConnected(true);
         setWalletAddress('UQBtest123456789abcdefghijklmnopqrstuvwxyz');
         setTonBalance(15.75);
+        setCosmoBalance(2450);
         setIsLoading(false);
       }, 1500);
       
@@ -76,6 +78,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setIsConnected(false);
     setWalletAddress(null);
     setTonBalance(0);
+    setCosmoBalance(0);
     console.log('Wallet disconnected');
   };
 
@@ -88,9 +91,11 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     try {
       console.log('Sending payment:', amount, 'TON');
       
-      // Simulate successful payment
+      // Simulate successful payment and level upgrade
       setTimeout(() => {
-        console.log('Payment sent successfully');
+        setTonBalance(prev => prev - amount);
+        setUserLevel(prev => Math.max(prev, userLevel + 1));
+        console.log('Payment sent successfully, level upgraded');
         refreshBalance();
       }, 2000);
       
@@ -106,8 +111,9 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     try {
       console.log('Refreshing balance...');
-      // Mock balance refresh
-      setTonBalance(15.75 + Math.random() * 5);
+      // Mock balance refresh with small variations
+      setTonBalance(prev => prev + (Math.random() - 0.5) * 2);
+      setCosmoBalance(prev => prev + Math.floor(Math.random() * 100));
     } catch (error) {
       console.error('Error refreshing balance:', error);
     }

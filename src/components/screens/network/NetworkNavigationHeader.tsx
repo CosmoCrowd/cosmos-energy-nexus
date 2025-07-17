@@ -1,38 +1,48 @@
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-
 interface NetworkNavigationHeaderProps {
-  currentLevelName: string;
+  currentLevel: string;
   onPrevious: () => void;
   onNext: () => void;
+  canGoPrevious: boolean;
+  canGoNext: boolean;
 }
 
 const NetworkNavigationHeader = ({ 
-  currentLevelName, 
+  currentLevel, 
   onPrevious, 
-  onNext 
+  onNext, 
+  canGoPrevious, 
+  canGoNext 
 }: NetworkNavigationHeaderProps) => {
   return (
-    <div className="flex items-center justify-between mb-6 px-4">
+    <div className="flex items-center justify-between p-4 bg-cosmic-gray/20 rounded-2xl border border-futuristic-primary/30 backdrop-blur-sm">
       <button
         onClick={onPrevious}
-        className="w-12 h-12 rounded-full bg-futuristic-primary/20 border border-futuristic-primary/50 flex items-center justify-center hover:bg-futuristic-primary/30 transition-all duration-300 hover:scale-110"
+        disabled={!canGoPrevious}
+        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+          canGoPrevious
+            ? 'bg-futuristic-primary/20 border border-futuristic-primary/50 text-futuristic-primary hover:bg-futuristic-primary/30'
+            : 'bg-cosmic-gray/30 border border-gray-600 text-gray-500 cursor-not-allowed'
+        }`}
       >
-        <ChevronLeft className="text-futuristic-primary" size={24} />
+        ←
       </button>
       
       <div className="text-center">
-        <h3 className="text-white font-bold text-xl animate-hologram-flicker">
-          {currentLevelName}
-        </h3>
-        <div className="w-16 h-1 bg-gradient-to-r from-transparent via-futuristic-primary to-transparent mx-auto mt-2"></div>
+        <h3 className="text-white font-bold text-lg">{currentLevel}</h3>
+        <div className="text-futuristic-primary text-xs">Космическая Сеть</div>
       </div>
       
       <button
         onClick={onNext}
-        className="w-12 h-12 rounded-full bg-futuristic-primary/20 border border-futuristic-primary/50 flex items-center justify-center hover:bg-futuristic-primary/30 transition-all duration-300 hover:scale-110"
+        disabled={!canGoNext}
+        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+          canGoNext
+            ? 'bg-futuristic-primary/20 border border-futuristic-primary/50 text-futuristic-primary hover:bg-futuristic-primary/30'
+            : 'bg-cosmic-gray/30 border border-gray-600 text-gray-500 cursor-not-allowed'
+        }`}
       >
-        <ChevronRight className="text-futuristic-primary" size={24} />
+        →
       </button>
     </div>
   );

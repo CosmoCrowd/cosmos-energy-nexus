@@ -1,198 +1,223 @@
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useWallet } from '@/context/WalletContext';
-import { Plus, Send, ArrowDown, ExternalLink, LogOut } from 'lucide-react';
+import { Copy, ExternalLink, ArrowUpRight, ArrowDownLeft, Wallet, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
-import { telegramWalletService } from '@/services/telegramWalletService';
 
 const WalletScreen = () => {
-  const { tonBalance, tonPrice, walletAddress, disconnectWallet } = useWallet();
+  const { tonBalance, cosmoBalance, walletAddress, isConnected, connectWallet, disconnectWallet } = useWallet();
+  const [activeTab, setActiveTab] = useState<'balance' | 'transactions'>('balance');
 
-  const handleTopUp = async () => {
-    try {
-      const telegramEnv = telegramWalletService.checkTelegramEnvironment();
-      
-      if (!telegramEnv.isWebApp) {
-        toast.error('Приложение должно быть запущено в Telegram');
-        return;
-      }
+  // Mock transaction data
+  const transactions = [
+    { id: 1, type: 'deposit', amount: 5.0, date: '2024-01-15', status: 'completed', hash: 'abc123...' },
+    { id: 2, type: 'withdrawal', amount: -2.5, date: '2024-01-14', status: 'completed', hash: 'def456...' },
+    { id: 3, type: 'reward', amount: 1.25, date: '2024-01-13', status: 'completed', hash: 'ghi789...' },
+    { id: 4, type: 'purchase', amount: -8.0, date: '2024-01-12', status: 'pending', hash: 'jkl012...' },
+  ];
 
-      telegramWalletService.showNotification(
-        'Перенаправление в Telegram Wallet для пополнения',
-        'info'
-      );
-
-      // Открываем Telegram Wallet для пополнения
-      const success = await telegramWalletService.requestPayment({
-        amount: 0, // Пользователь сам выберет сумму в кошельке
-        recipient: walletAddress || '',
-        comment: 'Пополнение кошелька COSMO'
-      });
-
-      if (success) {
-        toast.success('Пополнение инициировано');
-      }
-    } catch (error) {
-      console.error('Ошибка пополнения:', error);
-      toast.error('Ошибка при инициации пополнения');
+  const copyAddress = () => {
+    if (walletAddress) {
+      navigator.clipboard.writeText(walletAddress);
+      toast.success('Адрес кошелька скопирован!');
     }
   };
 
-  const handleSend = () => {
-    // TODO: Открыть модальное окно для выбора получателя из участников матрицы
-    toast.info('Функция отправки TON участникам матрицы будет добавлена');
-  };
-
-  const handleWithdraw = () => {
-    toast.info('Функция снятия средств будет добавлена в следующем обновлении');
-  };
-
-  const handleDisconnect = async () => {
-    try {
-      await disconnectWallet();
-      toast.success('Кошелек отключен');
-    } catch (error) {
-      toast.error('Ошибка отключения кошелька');
-    }
-  };
-
-  const formatAddress = (address: string | null) => {
-    if (!address) return 'Не подключен';
+  const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-6)}`;
   };
 
+  const getTransactionIcon = (type: string) => {
+    switch (type) {
+      case 'deposit': return <ArrowDownLeft className="text-green-400" size={20} />;
+      case 'withdrawal': return <ArrowUpRight className="text-red-400" size={20} />;
+      case 'reward': return <span className="text-yellow-400">💰</span>;
+      case 'purchase': return <CreditCard className="text-blue-400" size={20} />;
+      default: return <Wallet className="text-gray-400" size={20} />;
+    }
+  };
+
+  const getTransactionLabel = (type: string) => {
+    switch (type) {
+      case 'deposit': return 'Пополнение';
+      case 'withdrawal': return 'Вывод';
+      case 'reward': return 'Награда';
+      case 'purchase': return 'Покупка';
+      default: return 'Транзакция';
+    }
+  };
+
   return (
-    <div className="min-h-screen px-4 pt-4 pb-24 space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-xl font-bold text-white mb-1">Кошелёк</h1>
-          <p className="text-gray-400 text-sm">
-            {formatAddress(walletAddress)}
-          </p>
-        </div>
-        <Button
-          onClick={handleDisconnect}
-          variant="ghost"
-          size="sm"
-          className="text-red-400 hover:text-red-300"
-        >
-          <LogOut className="h-4 w-4" />
-        </Button>
+    <div className="min-h-screen px-3 pt-2 pb-20 space-y-4 relative">
+      {/* Animated Background */}
+      <div className="fixed inset-0 pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-px h-px bg-futuristic-accent rounded-full animate-matrix-rain opacity-20"
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDuration: `${3 + Math.random() * 4}s`,
+              animationDelay: `${Math.random() * 4}s`
+            }}
+          />
+        ))}
       </div>
 
-      {/* Balance */}
-      <div className="cosmic-card p-4">
-        <div className="text-center mb-4">
-          <div className="text-3xl mb-2">💎</div>
-          <div className="text-3xl font-bold text-white mb-1">{tonBalance.toFixed(4)}</div>
-          <div className="text-sm text-gray-400 mb-2">TON</div>
-          <div className="text-lg text-neon-green font-semibold">
-            ${(tonBalance * tonPrice).toFixed(2)} USD
-          </div>
-          <div className="text-xs text-gray-400">
-            1 TON = ${tonPrice.toFixed(2)}
+      <div className="relative z-10">
+        {/* Wallet Header */}
+        <div className="bg-gradient-to-br from-cosmic-dark/90 via-futuristic-primary/10 to-futuristic-accent/10 rounded-3xl p-5 border border-futuristic-primary/30 backdrop-blur-xl animate-fade-in-up">
+          <div className="text-center mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-futuristic-primary to-futuristic-secondary rounded-full flex items-center justify-center mx-auto mb-3 animate-energy-pulse">
+              <Wallet className="text-black" size={28} />
+            </div>
+            <h2 className="text-white font-bold text-xl mb-2">Космический Кошелёк</h2>
+            {isConnected ? (
+              <div className="space-y-2">
+                <div className="bg-cosmic-gray/50 rounded-xl p-3 border border-futuristic-primary/30">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300 text-sm">{formatAddress(walletAddress!)}</span>
+                    <Button
+                      onClick={copyAddress}
+                      size="sm"
+                      variant="ghost"
+                      className="text-futuristic-primary hover:bg-futuristic-primary/20 p-1"
+                    >
+                      <Copy size={16} />
+                    </Button>
+                  </div>
+                </div>
+                <Button
+                  onClick={disconnectWallet}
+                  variant="ghost"
+                  className="text-red-400 hover:bg-red-400/20 text-sm"
+                >
+                  Отключить кошелёк
+                </Button>
+              </div>
+            ) : (
+              <Button
+                onClick={connectWallet}
+                className="bg-gradient-to-r from-futuristic-primary to-futuristic-accent text-black font-bold hover:scale-105 transition-transform"
+              >
+                Подключить Кошелёк
+              </Button>
+            )}
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="grid grid-cols-3 gap-2">
-          <Button
-            onClick={handleTopUp}
-            className="cosmic-button text-black font-semibold flex flex-col items-center py-3 text-sm hover:scale-105 transition-transform"
-          >
-            <Plus className="h-4 w-4 mb-1" />
-            Пополнить
-          </Button>
-          <Button
-            onClick={handleSend}
-            className="cosmic-button text-black font-semibold flex flex-col items-center py-3 text-sm hover:scale-105 transition-transform"
-          >
-            <Send className="h-4 w-4 mb-1" />
-            Отправить
-          </Button>
-          <Button
-            onClick={handleWithdraw}
-            className="cosmic-button text-black font-semibold flex flex-col items-center py-3 text-sm hover:scale-105 transition-transform"
-          >
-            <ArrowDown className="h-4 w-4 mb-1" />
-            Снять
-          </Button>
-        </div>
-      </div>
+        {isConnected && (
+          <>
+            {/* Balance Cards */}
+            <div className="grid grid-cols-2 gap-4 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+              <div className="bg-gradient-to-br from-cosmic-dark/90 via-blue-900/20 to-cyan-900/20 rounded-3xl p-4 border border-cyan-400/30 backdrop-blur-xl">
+                <div className="text-center">
+                  <div className="text-2xl mb-2">💎</div>
+                  <div className="text-cyan-400 font-bold text-lg font-mono">{tonBalance.toFixed(2)} TON</div>
+                  <div className="text-gray-400 text-xs">Основной баланс</div>
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-cosmic-dark/90 via-pink-900/20 to-purple-900/20 rounded-3xl p-4 border border-pink-400/30 backdrop-blur-xl">
+                <div className="text-center">
+                  <div className="text-2xl mb-2">🌌</div>
+                  <div className="text-pink-400 font-bold text-lg font-mono">{cosmoBalance} COSMO</div>
+                  <div className="text-gray-400 text-xs">Игровые токены</div>
+                </div>
+              </div>
+            </div>
 
-      {/* Transaction History */}
-      <div className="cosmic-card p-4">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-white font-semibold text-base">История транзакций</h3>
-        </div>
-        <div className="space-y-3">
-          {/* Mock transaction data - will be replaced with real data */}
-          <div className="flex justify-between items-center p-3 bg-cosmic-gray rounded-lg border border-gray-600">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center mr-3">
-                <Plus className="h-5 w-5 text-green-400" />
-              </div>
-              <div>
-                <div className="text-white text-sm font-medium">Пополнение</div>
-                <div className="text-gray-400 text-xs">28.12.2024 14:32</div>
-              </div>
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-4 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+              <Button className="bg-green-600/20 border border-green-400/50 text-green-400 hover:bg-green-600/30 rounded-2xl py-4 flex items-center space-x-2">
+                <ArrowDownLeft size={20} />
+                <span>Пополнить</span>
+              </Button>
+              <Button className="bg-red-600/20 border border-red-400/50 text-red-400 hover:bg-red-600/30 rounded-2xl py-4 flex items-center space-x-2">
+                <ArrowUpRight size={20} />
+                <span>Вывести</span>
+              </Button>
             </div>
-            <div className="text-right">
-              <div className="text-green-400 font-semibold">+5.0 TON</div>
-              <div className="text-xs text-gray-400">$12.50</div>
-            </div>
-          </div>
-          
-          <div className="flex justify-between items-center p-3 bg-cosmic-gray rounded-lg border border-gray-600">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-red-500/20 rounded-full flex items-center justify-center mr-3">
-                <Send className="h-5 w-5 text-red-400" />
-              </div>
-              <div>
-                <div className="text-white text-sm font-medium">Покупка энергии</div>
-                <div className="text-gray-400 text-xs">27.12.2024 18:45</div>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-red-400 font-semibold">-2.5 TON</div>
-              <div className="text-xs text-gray-400">$6.25</div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Project Info */}
-      <div className="cosmic-card p-4">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-white font-semibold text-base">Информация о проекте</h3>
-        </div>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">Главный кошелек:</span>
-            <span className="text-neon-green text-sm font-mono">
-              {`UQBDN8...qyBi`}
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">Сеть:</span>
-            <span className="text-white">TON Mainnet</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">Комиссия сети:</span>
-            <span className="text-white">~0.01 TON</span>
-          </div>
-        </div>
-      </div>
+            {/* Tabs */}
+            <div className="flex bg-cosmic-gray/30 rounded-2xl p-1 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+              <Button
+                onClick={() => setActiveTab('balance')}
+                className={`flex-1 rounded-xl py-3 transition-all ${
+                  activeTab === 'balance'
+                    ? 'bg-futuristic-primary text-black font-bold'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                Баланс
+              </Button>
+              <Button
+                onClick={() => setActiveTab('transactions')}
+                className={`flex-1 rounded-xl py-3 transition-all ${
+                  activeTab === 'transactions'
+                    ? 'bg-futuristic-primary text-black font-bold'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                История
+              </Button>
+            </div>
 
-      {/* Security Notice */}
-      <div className="cosmic-card p-4">
-        <h3 className="text-white font-semibold mb-3 text-base">🔒 Безопасность</h3>
-        <div className="text-sm text-gray-300 space-y-2">
-          <p>• Все транзакции проходят через блокчейн TON</p>
-          <p>• Ваши приватные ключи не покидают ваш кошелек</p>
-          <p>• Смарт-контракты проверены и безопасны</p>
-        </div>
+            {/* Content */}
+            {activeTab === 'balance' ? (
+              <div className="bg-gradient-to-br from-cosmic-dark/90 via-futuristic-primary/5 to-futuristic-accent/5 rounded-3xl p-5 border border-futuristic-primary/30 backdrop-blur-xl animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+                <h3 className="text-white font-bold mb-4">Детали баланса</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-3 bg-cosmic-gray/30 rounded-xl">
+                    <span className="text-gray-300">Доступно для вывода</span>
+                    <span className="text-futuristic-primary font-mono">{(tonBalance * 0.8).toFixed(2)} TON</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-cosmic-gray/30 rounded-xl">
+                    <span className="text-gray-300">В игре</span>
+                    <span className="text-futuristic-accent font-mono">{(tonBalance * 0.2).toFixed(2)} TON</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-cosmic-gray/30 rounded-xl">
+                    <span className="text-gray-300">Реферальные</span>
+                    <span className="text-pink-400 font-mono">{cosmoBalance} COSMO</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gradient-to-br from-cosmic-dark/90 via-futuristic-primary/5 to-futuristic-accent/5 rounded-3xl p-5 border border-futuristic-primary/30 backdrop-blur-xl animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+                <h3 className="text-white font-bold mb-4">История транзакций</h3>
+                <div className="space-y-3">
+                  {transactions.map((tx) => (
+                    <div key={tx.id} className="flex items-center justify-between p-3 bg-cosmic-gray/30 rounded-xl">
+                      <div className="flex items-center space-x-3">
+                        {getTransactionIcon(tx.type)}
+                        <div>
+                          <div className="text-white font-medium">{getTransactionLabel(tx.type)}</div>
+                          <div className="text-gray-400 text-xs">{tx.date}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className={`font-mono font-bold ${tx.amount > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {tx.amount > 0 ? '+' : ''}{tx.amount} TON
+                        </div>
+                        <div className={`text-xs ${tx.status === 'completed' ? 'text-green-400' : 'text-yellow-400'}`}>
+                          {tx.status === 'completed' ? 'Завершено' : 'В обработке'}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <Button
+                    variant="ghost"
+                    className="w-full text-futuristic-primary hover:bg-futuristic-primary/20 flex items-center space-x-2"
+                  >
+                    <ExternalLink size={16} />
+                    <span>Посмотреть в TON Explorer</span>
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
