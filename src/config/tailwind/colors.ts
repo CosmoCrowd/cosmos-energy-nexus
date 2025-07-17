@@ -43,23 +43,37 @@ export const colors = {
     border: 'hsl(var(--sidebar-border))',
     ring: 'hsl(var(--sidebar-ring))'
   },
-  neon: {
-    green: '#00ff88',
-    blue: '#00aaff',
-    purple: '#aa00ff',
-    pink: '#ff0088',
-    cyan: '#00ffff'
-  },
+  /* 2025 Enhanced Color Palette */
   cosmic: {
-    dark: '#0a0a0f',
-    darker: '#050508',
-    gray: '#1a1a2e',
-    light: '#16213e'
+    primary: 'hsl(var(--primary))',
+    'primary-glow': 'hsl(var(--primary-glow))',
+    secondary: 'hsl(var(--secondary))',
+    'secondary-glow': 'hsl(var(--secondary-glow))',
+    accent: 'hsl(var(--accent))',
+    'accent-glow': 'hsl(var(--accent-glow))',
+    dark: 'hsl(var(--background))',
+    card: 'hsl(var(--card))',
+    muted: 'hsl(var(--muted))',
   },
-  futuristic: {
-    primary: '#00ffff',
-    secondary: '#8000ff',
-    accent: '#ff0080',
-    glow: 'rgba(0, 255, 255, 0.5)'
+  gradients: {
+    primary: 'var(--gradient-primary)',
+    secondary: 'var(--gradient-secondary)',
+    accent: 'var(--gradient-accent)',
+    cosmic: 'var(--gradient-cosmic)',
+    glass: 'var(--gradient-glass)',
+  },
+  shadows: {
+    primary: 'var(--shadow-primary)',
+    secondary: 'var(--shadow-secondary)',
+    accent: 'var(--shadow-accent)',
+    glow: 'var(--shadow-glow)',
+    card: 'var(--shadow-card)',
+  },
+  neon: {
+    cyan: '#00ffff',
+    purple: '#8000ff', 
+    pink: '#ff0080',
+    blue: '#0080ff',
+    green: '#00ff80'
   }
 };

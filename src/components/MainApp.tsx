@@ -144,36 +144,36 @@ const MainApp = () => {
           {screens[currentScreen]}
         </div>
 
-        {/* Enhanced Bottom Navigation */}
-        <div className="fixed bottom-0 left-0 right-0 backdrop-blur-xl bg-cosmic-dark/90 border-t border-futuristic-primary/40 px-2 py-3 z-50">
-          <div className="absolute inset-0 bg-gradient-to-t from-futuristic-primary/5 to-transparent"></div>
-          <div className="flex justify-around items-center max-w-lg mx-auto relative z-10">
+        {/* 2025 Enhanced Bottom Navigation */}
+        <div className="fixed bottom-0 left-0 right-0 bottom-nav-enhanced px-4 py-4 z-50">
+          <div className="flex justify-around items-center max-w-md mx-auto">
             {navigationItems.map((item, index) => {
               const IconComponent = item.icon;
+              const isActive = currentScreen === item.id;
               return (
                 <Button
                   key={item.id}
                   variant="ghost"
                   onClick={() => handleScreenChange(item.id as Screen)}
-                  className={`flex flex-col items-center py-3 px-3 rounded-2xl text-sm transition-all duration-500 min-w-0 flex-1 transform hover:scale-110 bottom-nav-icons ${
-                    currentScreen === item.id
-                      ? 'bg-futuristic-primary/20 text-futuristics-primary border border-futuristic-primary/50 shadow-lg shadow-futuristic-primary/30 animate-futuristic-glow'
-                      : 'text-gray-400 hover:text-futuristic-primary hover:bg-futuristic-primary/10'
+                  className={`flex flex-col items-center gap-2 py-3 px-4 rounded-2xl text-sm transition-all duration-300 min-w-0 flex-1 transform hover:scale-105 ${
+                    isActive
+                      ? 'nav-item-active scale-110'
+                      : 'nav-item-inactive'
                   }`}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  <div className={`mb-2 transform transition-all duration-300 ${
-                    currentScreen === item.id ? 'animate-energy-pulse scale-110 text-futuristic-primary' : ''
+                  <div className={`transform transition-all duration-300 ${
+                    isActive ? 'scale-110' : 'scale-100'
                   }`}>
-                    <IconComponent size={28} />
+                    <IconComponent size={isActive ? 24 : 20} />
                   </div>
-                  <span className={`text-xs leading-tight truncate font-semibold ${
-                    currentScreen === item.id ? 'text-futuristic-primary' : ''
+                  <span className={`text-xs font-medium truncate transition-all duration-300 ${
+                    isActive ? 'scale-105' : 'scale-100'
                   }`}>
                     {item.label}
                   </span>
-                  {currentScreen === item.id && (
-                    <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-gradient-to-r from-transparent via-futuristic-primary to-transparent"></div>
+                  {isActive && (
+                    <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gradient-primary rounded-full animate-pulse"></div>
                   )}
                 </Button>
               );
