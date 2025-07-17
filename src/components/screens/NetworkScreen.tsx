@@ -8,10 +8,8 @@ import NetworkPurchaseModal from './network/NetworkPurchaseModal';
 
 const NetworkScreen = () => {
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-  const [selectedLevel, setSelectedLevel] = useState(0);
 
   const handleLevelPurchase = (level: number) => {
-    setSelectedLevel(level);
     setShowPurchaseModal(true);
   };
 
@@ -50,7 +48,6 @@ const NetworkScreen = () => {
       
       <NetworkPurchaseModal
         isOpen={showPurchaseModal}
-        selectedLevel={selectedLevel}
         onClose={handleModalClose}
       />
     </div>
