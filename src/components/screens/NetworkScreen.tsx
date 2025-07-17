@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import NetworkHeader from './network/NetworkHeader';
 import ReferralSection from './network/ReferralSection';
@@ -8,8 +9,13 @@ import NetworkPurchaseModal from './network/NetworkPurchaseModal';
 
 const NetworkScreen = () => {
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [selectedLevelIndex, setSelectedLevelIndex] = useState(0);
+  
+  // Mock user level - in a real app this would come from user data
+  const userLevel = 0;
 
   const handleLevelPurchase = (level: number) => {
+    setSelectedLevelIndex(level);
     setShowPurchaseModal(true);
   };
 
@@ -48,6 +54,8 @@ const NetworkScreen = () => {
       
       <NetworkPurchaseModal
         isOpen={showPurchaseModal}
+        currentLevelIndex={selectedLevelIndex}
+        userLevel={userLevel}
         onClose={handleModalClose}
       />
     </div>
