@@ -1,17 +1,17 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import EnergyScreen from './screens/EnergyScreen';
+import NetworkScreen from './screens/NetworkScreen';
 import WalletScreen from './screens/WalletScreen';
 import TeamScreen from './screens/TeamScreen';
 import TasksScreen from './screens/TasksScreen';
 import StatsScreen from './screens/StatsScreen';
 import { FuturisticEnergy, FuturisticWallet, FuturisticTeam, FuturisticTasks, FuturisticStats } from '@/components/ui/futuristic-icons';
 
-type Screen = 'energy' | 'wallet' | 'team' | 'tasks' | 'stats';
+type Screen = 'network' | 'wallet' | 'team' | 'tasks' | 'stats';
 
 const MainApp = () => {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('energy');
+  const [currentScreen, setCurrentScreen] = useState<Screen>('network');
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const MainApp = () => {
   }, []);
 
   const screens = {
-    energy: <EnergyScreen />,
+    network: <NetworkScreen />,
     wallet: <WalletScreen />,
     team: <TeamScreen />,
     tasks: <TasksScreen />,
@@ -43,7 +43,7 @@ const MainApp = () => {
   };
 
   const navigationItems = [
-    { id: 'energy', label: 'Энергия', icon: FuturisticEnergy },
+    { id: 'network', label: 'Сеть', icon: FuturisticEnergy },
     { id: 'wallet', label: 'Кошелёк', icon: FuturisticWallet },
     { id: 'team', label: 'Команда', icon: FuturisticTeam },
     { id: 'tasks', label: 'Задания', icon: FuturisticTasks },
@@ -72,12 +72,12 @@ const MainApp = () => {
             <div className="relative w-24 h-24 mx-auto">
               <div className="absolute inset-0 bg-futuristic-gradient rounded-full animate-futuristic-glow"></div>
               <div className="absolute inset-3 bg-cosmic-dark rounded-full flex items-center justify-center">
-                <FuturisticEnergy size={32} className="animate-energy-pulse" />
+                <span className="text-3xl animate-pulse">🌌</span>
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-white font-bold text-2xl animate-hologram-flicker">COSMO MATRIX</div>
-              <div className="text-futuristic-primary font-semibold animate-energy-pulse">Активация системы...</div>
+              <div className="text-white font-bold text-2xl animate-hologram-flicker">COSMO SPHERE</div>
+              <div className="text-futuristic-primary font-semibold animate-energy-pulse">Пробуждение космического разума...</div>
             </div>
             <div className="flex space-x-2 justify-center">
               {[0, 1, 2, 3, 4].map((i) => (
