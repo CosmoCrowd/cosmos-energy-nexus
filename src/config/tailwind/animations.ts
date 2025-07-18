@@ -28,18 +28,18 @@ export const keyframes = {
     '0%': { opacity: '0', transform: 'translateY(20px)' },
     '100%': { opacity: '1', transform: 'translateY(0)' }
   },
-  'futuristic-glow': {
+  'cosmic-glow': {
     '0%, 100%': { 
-      boxShadow: '0 0 10px theme(colors.futuristic.primary), 0 0 20px theme(colors.futuristic.primary), 0 0 30px theme(colors.futuristic.primary)',
-      borderColor: 'theme(colors.futuristic.primary)'
+      boxShadow: '0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary))',
+      borderColor: 'hsl(var(--primary))'
     },
     '33%': { 
-      boxShadow: '0 0 15px theme(colors.futuristic.secondary), 0 0 25px theme(colors.futuristic.secondary), 0 0 35px theme(colors.futuristic.secondary)',
-      borderColor: 'theme(colors.futuristic.secondary)'
+      boxShadow: '0 0 15px hsl(var(--secondary)), 0 0 25px hsl(var(--secondary)), 0 0 35px hsl(var(--secondary))',
+      borderColor: 'hsl(var(--secondary))'
     },
     '66%': { 
-      boxShadow: '0 0 12px theme(colors.futuristic.accent), 0 0 22px theme(colors.futuristic.accent), 0 0 32px theme(colors.futuristic.accent)',
-      borderColor: 'theme(colors.futuristic.accent)'
+      boxShadow: '0 0 12px hsl(var(--accent)), 0 0 22px hsl(var(--accent)), 0 0 32px hsl(var(--accent))',
+      borderColor: 'hsl(var(--accent))'
     }
   },
   'hologram-flicker': {
@@ -78,7 +78,7 @@ export const animation = {
   'particle-float': 'particle-float 3s ease-in-out infinite',
   'cosmic-rotate': 'cosmic-rotate 20s linear infinite',
   'fade-in-up': 'fade-in-up 0.5s ease-out',
-  'futuristic-glow': 'futuristic-glow 3s ease-in-out infinite',
+  'cosmic-glow': 'cosmic-glow 3s ease-in-out infinite',
   'hologram-flicker': 'hologram-flicker 2s ease-in-out infinite',
   'matrix-rain': 'matrix-rain 4s linear infinite',
   'energy-pulse': 'energy-pulse 2s ease-in-out infinite',
