@@ -52,7 +52,7 @@ const TeamScreen = () => {
       case 1: return <Crown className="text-yellow-400" size={20} />;
       case 2: return <Trophy className="text-gray-300" size={20} />;
       case 3: return <Trophy className="text-orange-400" size={20} />;
-      default: return <Star className="text-futuristic-primary" size={16} />;
+      default: return <Star className="text-cosmic-primary" size={16} />;
     }
   };
 
@@ -63,7 +63,7 @@ const TeamScreen = () => {
         {[...Array(25)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-px h-px bg-futuristic-secondary rounded-full animate-matrix-rain opacity-20"
+            className="absolute w-px h-px bg-cosmic-secondary rounded-full animate-matrix-rain opacity-20"
             style={{
               left: `${Math.random() * 100}%`,
               animationDuration: `${3 + Math.random() * 4}s`,

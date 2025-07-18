@@ -310,7 +310,7 @@ const TasksScreen = () => {
             <div className="grid grid-cols-7 gap-2 mb-4">
               {[0.1, 0.2, 0.3, 0.5, 0.8, 1.0, 2.0].map((reward, index) => (
                 <div key={index} className={`p-2 rounded-lg text-xs font-bold ${
-                  index === 0 ? 'bg-futuristic-primary text-black' : 'bg-cosmic-gray/50 text-gray-400'
+                  index === 0 ? 'bg-cosmic-primary text-black' : 'bg-cosmic-gray/50 text-gray-400'
                 }`}>
                   День {index + 1}
                   <div className="text-xs font-mono">{reward} TON</div>

@@ -26,7 +26,7 @@ const EnergyScreen = () => {
         {[...Array(30)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-px h-px bg-futuristic-primary rounded-full animate-matrix-rain opacity-20"
+            className="absolute w-px h-px bg-cosmic-primary rounded-full animate-matrix-rain opacity-20"
             style={{
               left: `${Math.random() * 100}%`,
               animationDuration: `${3 + Math.random() * 4}s`,
