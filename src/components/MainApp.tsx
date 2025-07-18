@@ -110,12 +110,12 @@ const MainApp = () => {
   return (
     <div className="telegram-container mobile-safe-area">
       <div className="min-h-screen flex flex-col bg-cosmic-gradient relative overflow-hidden">
-        {/* Enhanced animated background */}
+        {/* Enhanced cosmic background particles */}
         <div className="absolute inset-0">
           {[...Array(60)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-px h-px bg-futuristic-primary rounded-full animate-matrix-rain opacity-30"
+              className="absolute w-px h-px bg-cosmic-primary rounded-full animate-matrix-rain opacity-30"
               style={{
                 left: `${Math.random() * 100}%`,
                 animationDuration: `${3 + Math.random() * 4}s`,
@@ -128,7 +128,7 @@ const MainApp = () => {
           {[...Array(5)].map((_, i) => (
             <div
               key={`cosmic-${i}`}
-              className="absolute w-2 h-2 bg-futuristic-accent rounded-full animate-ping opacity-20"
+              className="absolute w-2 h-2 bg-cosmic-accent-glow rounded-full animate-ping opacity-20"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
