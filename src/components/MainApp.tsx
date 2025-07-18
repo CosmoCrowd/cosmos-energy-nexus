@@ -70,7 +70,7 @@ const MainApp = () => {
             {[...Array(50)].map((_, i) => (
               <div
                 key={i}
-                className="absolute w-1 h-1 bg-futuristic-primary rounded-full animate-matrix-rain"
+                className="absolute w-1 h-1 bg-cosmic-primary rounded-full animate-matrix-rain"
                 style={{
                   left: `${Math.random() * 100}%`,
                   animationDuration: `${2 + Math.random() * 3}s`,
@@ -82,21 +82,21 @@ const MainApp = () => {
           
           <div className="text-center space-y-6 animate-fade-in-up z-10">
             <div className="relative w-32 h-32 mx-auto">
-              <div className="absolute inset-0 bg-futuristic-gradient rounded-full animate-futuristic-glow"></div>
-              <div className="absolute inset-4 bg-cosmic-dark rounded-full flex items-center justify-center border-4 border-futuristic-primary/50">
+              <div className="absolute inset-0 bg-gradient-primary rounded-full animate-cosmic-glow"></div>
+              <div className="absolute inset-4 bg-cosmic-dark rounded-full flex items-center justify-center border-4 border-cosmic-primary/50">
                 <span className="text-4xl animate-pulse">🌌</span>
               </div>
             </div>
             <div className="space-y-3">
               <div className="text-white font-bold text-3xl animate-hologram-flicker">COSMO SPHERE</div>
-              <div className="text-futuristic-primary font-semibold text-lg animate-energy-pulse">Пробуждение космического разума...</div>
+              <div className="text-cosmic-primary font-semibold text-lg animate-cosmic-pulse">Пробуждение космического разума...</div>
               <div className="text-gray-400 text-sm">Строй сети • Зарабатывай TON • Покоряй космос</div>
             </div>
             <div className="flex space-x-2 justify-center">
               {[0, 1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="w-3 h-3 bg-futuristic-primary rounded-full animate-energy-pulse"
+                  className="w-3 h-3 bg-cosmic-primary rounded-full animate-cosmic-pulse"
                   style={{ animationDelay: `${i * 0.2}s` }}
                 ></div>
               ))}
