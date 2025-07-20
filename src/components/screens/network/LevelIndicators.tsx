@@ -15,25 +15,37 @@ const LevelIndicators = ({ onLevelPurchase }: LevelIndicatorsProps) => {
   };
 
   return (
-    <div className="flex justify-center items-center space-x-3 px-4 py-4 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((level) => (
-        <div
-          key={level}
-          className={`relative w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-            level <= userLevel
-              ? 'bg-gradient-to-br from-futuristic-primary to-futuristic-secondary text-black shadow-lg shadow-futuristic-primary/50 animate-energy-pulse'
-              : 'bg-gray-700 text-gray-400 border border-gray-600 cursor-pointer hover:border-futuristic-primary/50 hover:bg-gray-600 hover:scale-110'
-          }`}
-          onClick={() => handleLockClick(level)}
-        >
-          {level <= userLevel ? (
-            <span className="animate-energy-pulse">🚀</span>
-          ) : (
-            <span className="hover:scale-110 transition-transform">🔒</span>
-          )}
-          <div className="absolute -bottom-6 text-xs text-white font-mono">{level}</div>
-        </div>
-      ))}
+    <div className="cosmic-card p-4">
+      <h3 className="text-center text-foreground font-bold text-lg mb-4">Космические Уровни</h3>
+      <div className="flex justify-center items-center space-x-2 overflow-x-auto pb-2">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((level) => {
+          const isActive = level <= userLevel;
+          const levelPrices = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512];
+          
+          return (
+            <div
+              key={level}
+              className={`relative flex-shrink-0 w-12 h-16 rounded-xl flex flex-col items-center justify-center text-sm font-bold transition-all duration-300 cursor-pointer ${
+                isActive
+                  ? 'bg-gradient-primary text-primary-foreground shadow-glow animate-cosmic-pulse border-2 border-primary/50'
+                  : 'bg-muted/50 text-muted-foreground border-2 border-muted-foreground/30 hover:border-primary/50 hover:bg-muted hover:scale-105'
+              }`}
+              onClick={() => handleLockClick(level)}
+            >
+              <div className="text-lg mb-1">
+                {isActive ? '🚀' : '🔒'}
+              </div>
+              <div className="text-xs font-bold">{level}</div>
+              <div className="text-xs opacity-80">{levelPrices[level - 1]} TON</div>
+              
+              {/* Level progress indicator */}
+              {isActive && (
+                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-primary rounded-full animate-pulse"></div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
