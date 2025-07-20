@@ -1,77 +1,66 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Copy, Share2 } from 'lucide-react';
-import { useProfile } from '@/hooks/useProfile';
-import { useToast } from '@/hooks/use-toast';
+import { Copy, Share } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ReferralSection = () => {
-  const { profile } = useProfile();
-  const { toast } = useToast();
-  const [copied, setCopied] = useState(false);
+  const [referralLink] = useState('https://t.me/CosmoSphereBot?start=ref_12345');
 
-  const copyReferralLink = async () => {
-    const referralLink = `https://t.me/CosmoSphereBot?start=${profile?.referral_code || 'DEFAULT'}`;
-    
-    try {
-      await navigator.clipboard.writeText(referralLink);
-      setCopied(true);
-      toast({ title: "Реферальная ссылка скопирована!" });
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      toast({ title: "Ошибка копирования", description: "Попробуйте еще раз" });
-    }
+  const copyReferralLink = () => {
+    navigator.clipboard.writeText(referralLink);
+    toast.success('Реферальная ссылка скопирована!');
   };
 
   const shareReferralLink = () => {
-    const referralLink = `https://t.me/CosmoSphereBot?start=${profile?.referral_code || 'DEFAULT'}`;
-    const text = "🌌 Присоединяйся к Cosmo Sphere! Строй космические сети и зарабатывай TON!";
-    
     if (window.Telegram?.WebApp) {
-      // Use regular window.open for Telegram share
-      window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(text)}`, '_blank');
+      const shareText = `🌌 Присоединяйся к Cosmo Sphere! Строй Космические Сети и зарабатывай TON вместе со мной!\n\n${referralLink}`;
+      
+      // Open Telegram share dialog
+      window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(shareText)}`, '_blank');
     } else {
-      // Fallback to copying
       copyReferralLink();
     }
   };
 
   return (
-    <div className="cosmic-card p-4 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
-      <h3 className="text-center text-foreground font-bold text-lg mb-3">Пригласить Навигаторов</h3>
+    <div className="bg-gradient-to-br from-cosmic-dark/90 via-futuristic-primary/10 to-futuristic-accent/10 rounded-3xl p-4 border border-futuristic-primary/30 backdrop-blur-xl animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+      <div className="flex items-center space-x-3 mb-3">
+        <span className="text-2xl animate-bounce">🚀</span>
+        <div>
+          <h3 className="text-white font-bold text-sm">Пригласи в Космическую Сеть</h3>
+          <p className="text-gray-300 text-xs">Расширяй свою команду Навигаторов</p>
+        </div>
+      </div>
       
-      <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl p-4 border border-primary/20 mb-4">
-        <div className="flex items-center space-x-3 mb-3">
-          <span className="text-2xl">🚀</span>
-          <div>
-            <div className="text-primary font-semibold">Ваш реферальный код</div>
-            <div className="text-muted-foreground text-sm">{profile?.referral_code || 'Загрузка...'}</div>
+      <div className="flex space-x-2">
+        <div className="flex-1 bg-cosmic-gray/50 rounded-xl px-3 py-2 border border-futuristic-primary/30">
+          <div className="text-futuristic-primary text-xs font-mono truncate">
+            {referralLink}
           </div>
         </div>
         
-        <div className="text-xs text-muted-foreground mb-3">
-          За каждого приглашенного Навигатора получайте бонусы и стройте свою космическую империю!
-        </div>
-      </div>
-
-      <div className="flex space-x-2">
         <Button
           onClick={copyReferralLink}
-          variant="outline"
-          className="flex-1 border-primary/30 hover:bg-primary/10"
-          disabled={copied}
+          size="sm"
+          className="bg-futuristic-primary/20 hover:bg-futuristic-primary/30 border border-futuristic-primary/50 text-futuristic-primary hover:scale-105 transition-transform px-3"
         >
-          <Copy className="w-4 h-4 mr-2" />
-          {copied ? 'Скопировано!' : 'Копировать ссылку'}
+          <Copy size={16} />
         </Button>
         
         <Button
           onClick={shareReferralLink}
-          className="flex-1 cosmic-button"
+          size="sm"
+          className="bg-futuristic-accent/20 hover:bg-futuristic-accent/30 border border-futuristic-accent/50 text-futuristic-accent hover:scale-105 transition-transform px-3"
         >
-          <Share2 className="w-4 h-4 mr-2" />
-          Поделиться
+          <Share size={16} />
         </Button>
+      </div>
+      
+      <div className="mt-3 text-center">
+        <div className="text-xs text-gray-400">
+          💫 За каждого приглашённого получай бонус к доходу
+        </div>
       </div>
     </div>
   );
