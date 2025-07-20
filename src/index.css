@@ -52,6 +52,9 @@
     --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-glow)));
     --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-glow)));
     --gradient-cosmic: linear-gradient(135deg, hsl(224 71% 4%), hsl(224 47% 8%), hsl(260 60% 15%));
+    
+    /* Background utilities */
+    --bg-cosmic-gradient: var(--gradient-cosmic);
     --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
     
     /* Shadows */
@@ -98,6 +101,11 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior: none;
+  }
+  
+  /* Utility classes */
+  .bg-cosmic-gradient {
+    background: var(--gradient-cosmic);
   }
 
   #root {
@@ -297,6 +305,34 @@
 @keyframes cosmic-spin-slow {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes matrix-rain {
+  0% { 
+    transform: translateY(-100vh) translateX(0); 
+    opacity: 0;
+  }
+  10% { 
+    opacity: 1;
+  }
+  90% { 
+    opacity: 1;
+  }
+  100% { 
+    transform: translateY(100vh) translateX(10px); 
+    opacity: 0;
+  }
+}
+
+@keyframes hologram-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+  75% { opacity: 0.9; }
 }
 
 @keyframes cosmic-pulse {
@@ -536,6 +572,37 @@
 
 .animate-button-hover {
   animation: button-hover 2s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: cosmic-spin-slow 8s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 6s linear infinite;
+}
+
+.animate-matrix-rain {
+  animation: matrix-rain 4s linear infinite;
+}
+
+.animate-hologram-flicker {
+  animation: hologram-flicker 3s ease-in-out infinite;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out forwards;
+}
+
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Медиа запросы для мобильных устройств */
