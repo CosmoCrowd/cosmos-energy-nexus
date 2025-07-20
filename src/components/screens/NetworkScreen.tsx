@@ -4,8 +4,8 @@ import { useNetworkLevels } from '@/hooks/useNetworkLevels';
 import NetworkHeader from './network/NetworkHeader';
 import ReferralSection from './network/ReferralSection';
 import LevelIndicators from './network/LevelIndicators';
-import SymmetricMatrix from './network/SymmetricMatrix';
 import CosmicVisualization from './network/CosmicVisualization';
+import NetworkMatrix from './network/NetworkMatrix';
 import NetworkPurchaseModal from './network/NetworkPurchaseModal';
 
 const NetworkScreen = () => {
@@ -76,9 +76,14 @@ const NetworkScreen = () => {
 
       <div className="relative z-10 space-y-6">
         <NetworkHeader />
-        <SymmetricMatrix onLevelPurchase={handleLevelPurchase} />
         <ReferralSection />
+        <LevelIndicators onLevelPurchase={handleLevelPurchase} />
         <CosmicVisualization />
+        
+        {/* Keep the original matrix for purchasing levels */}
+        <div className="opacity-0 pointer-events-none absolute">
+          <NetworkMatrix onLevelPurchase={handleLevelPurchase} />
+        </div>
       </div>
       
       <NetworkPurchaseModal

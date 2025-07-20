@@ -1,137 +1,105 @@
-import React from 'react';
-import { useProfile } from '@/hooks/useProfile';
+
+import { useWallet } from '@/context/WalletContext';
+import { FuturisticRefresh } from '@/components/ui/futuristic-icons';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Star, Zap } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 const NetworkHeader = () => {
-  const { profile, loading } = useProfile();
+  const { tonBalance, cosmoBalance, userLevel, walletAddress, refreshBalance } = useWallet();
+  const [totalUsers, setTotalUsers] = useState(127843);
+  const [userName, setUserName] = useState('');
 
-  const getAvatarGradient = (level: number) => {
-    const gradients = [
-      'from-cyan-400 via-blue-500 to-purple-600',     // Level 1
-      'from-purple-500 via-pink-500 to-red-500',     // Level 2
-      'from-orange-400 via-yellow-500 to-green-500', // Level 3
-      'from-green-400 via-teal-500 to-cyan-500',     // Level 4
-      'from-indigo-500 via-purple-600 to-pink-600',  // Level 5+
-    ];
-    return gradients[Math.min(level - 1, gradients.length - 1)] || gradients[0];
-  };
-
-  const getUserInitials = () => {
-    if (profile?.full_name) {
-      return profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  useEffect(() => {
+    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+      const user = window.Telegram.WebApp.initDataUnsafe.user;
+      setUserName(user.first_name || user.username || 'User');
+    } else {
+      setUserName('Навигатор'); // Fallback name
     }
-    return profile?.username?.slice(0, 2).toUpperCase() || 'CS';
-  };
+  }, []);
 
-  if (loading) {
-    return (
-      <div className="glass-card p-6 animate-pulse">
-        <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-cosmic-muted rounded-full"></div>
-          <div className="space-y-2">
-            <div className="h-4 bg-cosmic-muted rounded w-32"></div>
-            <div className="h-3 bg-cosmic-muted rounded w-24"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // User ranks based on TON earned
+  const getUserRank = () => {
+    const ranks = [
+      { name: 'Первопроходец', minTon: 0 },
+      { name: 'Звёздный Новичок', minTon: 10 },
+      { name: 'Путник Космоса', minTon: 20 },
+      { name: 'Звёздный Странник', minTon: 40 },
+      { name: 'Космический Мастер', minTon: 80 },
+      { name: 'Светоч Разума', minTon: 160 },
+      { name: 'Космический Визионер', minTon: 320 },
+      { name: 'Архитектор Сетей', minTon: 640 },
+      { name: 'Звёздный Лидер', minTon: 1280 },
+      { name: 'Владыка Космоса', minTon: 2560 },
+    ];
+    
+    // Find the highest rank based on balance
+    for (let i = ranks.length - 1; i >= 0; i--) {
+      if (tonBalance >= ranks[i].minTon) {
+        return ranks[i].name;
+      }
+    }
+    return ranks[0].name;
+  };
 
   return (
-    <div className="glass-card p-6 animate-screen-enter">
-      {/* Cosmic Background Effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-cosmic-primary/5 via-transparent to-cosmic-accent/5 rounded-[inherit]"></div>
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-cosmic-dark/90 via-purple-900/20 to-pink-900/20 border border-futuristic-primary/30 backdrop-blur-xl animate-fade-in-up p-4">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-hologram-gradient animate-hologram-flicker opacity-30"></div>
       
       <div className="relative z-10">
-        {/* User Profile Section */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            {/* Enhanced Avatar */}
-            <div className="relative group">
-              <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${getAvatarGradient(profile?.network_level || 1)} p-0.5 animate-cosmic-glow`}>
+        {/* Top Row */}
+        <div className="flex items-center justify-between mb-4">
+          {/* Left - User Profile */}
+          <div className="flex items-center space-x-3">
+            <div className="relative w-12 h-12">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 p-0.5 animate-futuristic-glow">
                 <div className="w-full h-full bg-cosmic-dark rounded-full flex items-center justify-center">
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${getAvatarGradient(profile?.network_level || 1)} flex items-center justify-center text-white font-bold text-lg shadow-lg`}>
-                    {getUserInitials()}
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
+                    <span className="text-sm">🧑‍🚀</span>
                   </div>
                 </div>
               </div>
-              {/* Level Badge */}
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-primary rounded-full flex items-center justify-center border-2 border-cosmic-dark">
-                <span className="text-xs font-bold text-cosmic-dark">{profile?.network_level || 1}</span>
+            </div>
+            <div>
+              <div className="text-white font-bold text-sm">{userName}</div>
+              <div className="text-yellow-400 text-xs animate-pulse">{getUserRank()}</div>
+              <div className="flex items-center space-x-3 text-xs">
+                <span className="text-futuristic-primary font-mono">{tonBalance.toFixed(2)} TON</span>
+                <span className="text-pink-400 font-mono">{cosmoBalance} COSMO</span>
               </div>
             </div>
+          </div>
 
-            {/* User Info */}
-            <div className="space-y-1">
-              <h2 className="text-xl font-bold text-white">
-                {profile?.full_name || profile?.username || 'Космический Пионер'}
-              </h2>
+          {/* Right - Users Counter and Refresh */}
+          <div className="flex items-center space-x-2">
+            <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-3 py-1 rounded-lg">
               <div className="flex items-center space-x-2">
-                <Star size={14} className="text-cosmic-accent" />
-                <span className="text-cosmic-accent text-sm font-medium">
-                  Уровень {profile?.network_level || 1}
-                </span>
+                <span className="text-white text-xs font-bold">НАВИГАТОРЫ</span>
+                <span className="text-white text-sm font-mono animate-pulse">{totalUsers.toLocaleString()}</span>
               </div>
-              <div className="flex items-center space-x-4 text-sm">
-                <div className="flex items-center space-x-1">
-                  <Zap size={14} className="text-cosmic-primary" />
-                  <span className="text-cosmic-primary font-mono">
-                    {profile?.total_earned.toFixed(4) || '0.0000'} TON
-                  </span>
-                </div>
-                <div className="text-cosmic-secondary">
-                  Энергия: {profile?.energy_points.toFixed(0) || '0'}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Stats & Actions */}
-          <div className="text-right space-y-2">
-            <div className="bg-gradient-secondary px-4 py-2 rounded-lg">
-              <div className="text-xs text-cosmic-secondary-glow font-medium">НАВИГАТОРЫ</div>
-              <div className="text-lg font-bold text-white animate-counter-up">127,843</div>
             </div>
             <Button
+              onClick={refreshBalance}
               variant="ghost"
               size="sm"
-              className="cosmic-button-accent p-2"
+              className="p-2 hover:bg-futuristic-primary/20 transition-all duration-300 hover:scale-110 rounded-xl border border-futuristic-primary/30"
             >
-              <RefreshCw size={16} />
+              <FuturisticRefresh size={16} className="text-futuristic-primary" />
             </Button>
           </div>
         </div>
 
-        {/* Mission Statement */}
-        <div className="glass-card p-4 bg-gradient-to-r from-cosmic-primary/10 to-cosmic-accent/10 border border-cosmic-primary/30">
-          <div className="flex items-center space-x-3">
-            <div className="text-2xl animate-cosmic-pulse">🌌</div>
+        {/* Cosmo Sphere Legend */}
+        <div className="bg-gradient-to-r from-futuristic-primary/10 to-futuristic-accent/10 rounded-xl p-3 border border-futuristic-primary/30">
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl animate-pulse">🌌</span>
             <div>
-              <h3 className="text-cosmic-primary font-bold text-sm">COSMO SPHERE активирована</h3>
-              <p className="text-muted-foreground text-xs">
-                Строй космические сети • Зарабатывай TON • Покоряй вселенную
-              </p>
+              <div className="text-futuristic-primary font-bold text-sm">Cosmo Sphere пробуждается...</div>
+              <div className="text-gray-300 text-xs">Стройте Космические Сети, станьте частью будущего</div>
             </div>
           </div>
         </div>
-
-        {/* Referral Code */}
-        {profile?.referral_code && (
-          <div className="mt-4 flex items-center justify-between p-3 bg-cosmic-card rounded-lg border border-cosmic-border">
-            <div>
-              <div className="text-xs text-muted-foreground">Реферальный код</div>
-              <div className="font-mono text-cosmic-primary font-bold">{profile.referral_code}</div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigator.clipboard.writeText(profile.referral_code)}
-            >
-              Копировать
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
